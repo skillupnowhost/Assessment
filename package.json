@@ -1,0 +1,17 @@
+{
+  "name": "testers-nexus",
+  "version": "1.0.0",
+  "description": "A futuristic secure community hub for software testers.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "testing",
+    "qa",
+    "community",
+    "auth"
+  ],
+  "author": "",
+  "license": "MIT"
+}

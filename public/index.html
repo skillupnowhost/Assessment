@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Testers Nexus is a secure global community hub for manual, automation, performance, security, accessibility, and exploratory testers." />
+    <title>Testers Nexus | Secure QA Community</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="orb orb-one"></div>
+    <div class="orb orb-two"></div>
+    <div class="scan-grid"></div>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Testers Nexus home">
+        <span class="brand-mark">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M32 4 56 16v17c0 15-10 24-24 27C18 57 8 48 8 33V16L32 4Z" />
+            <path d="M22 31h20M32 21v20M20 43c8-7 16-7 24 0" />
+          </svg>
+        </span>
+        <span>Testers Nexus</span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="#community">Community</a>
+        <a href="#safety">Safety</a>
+        <a href="#opportunities">Opportunities</a>
+        <a href="#join">Join</a>
+      </nav>
+      <button class="button ghost" data-open-auth>Sign in</button>
+    </header>
+
+    <main id="top">
+      <section class="hero section-shell">
+        <div class="hero-copy">
+          <p class="eyebrow">Global QA Signal Network</p>
+          <h1>Where testers trade field notes, referrals, and interview intel safely.</h1>
+          <p class="hero-text">
+            A futuristic social hub for manual, automation, performance, security, accessibility, mobile, and emerging test specialists. Share what helps, protect what is private.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#join">Create verified profile</a>
+            <a class="button secondary" href="#community">Explore community feed</a>
+          </div>
+          <div class="metrics" aria-label="Platform highlights">
+            <span><strong>Zero PII</strong> private-data guardrails</span>
+            <span><strong>PBKDF2</strong> password hashing</span>
+            <span><strong>Verified</strong> email-first trust</span>
+          </div>
+        </div>
+
+        <div class="hero-panel" aria-label="Animated tester operations console">
+          <div class="video-frame">
+            <video autoplay muted loop playsinline poster="" aria-label="Abstract quality engineering video loop">
+              <source src="/media/nexus-loop.webm" type="video/webm" />
+            </video>
+            <div class="video-fallback">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+          <div class="radar-card">
+            <div class="radar"></div>
+            <h2>Live Quality Pulse</h2>
+            <p>Signals from interviews, toolchains, referrals, incidents, and test strategy labs.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="icon-band section-shell" aria-label="Tester disciplines">
+        <article class="tester-chip">
+          <span class="icon manual"></span>
+          <h3>Manual</h3>
+          <p>Exploratory charters, test design, bug reports.</p>
+        </article>
+        <article class="tester-chip">
+          <span class="icon automation"></span>
+          <h3>Automation</h3>
+          <p>Frameworks, CI gates, flake control.</p>
+        </article>
+        <article class="tester-chip">
+          <span class="icon performance"></span>
+          <h3>Performance</h3>
+          <p>Load models, profiling, observability.</p>
+        </article>
+        <article class="tester-chip">
+          <span class="icon security"></span>
+          <h3>Security</h3>
+          <p>Threat thinking and safe disclosure habits.</p>
+        </article>
+      </section>
+
+      <section id="community" class="section-shell split">
+        <div>
+          <p class="eyebrow">Community Feed</p>
+          <h2>Signal-rich discussions without private-data leakage.</h2>
+          <p>Post anonymized experiences, job leads, referral context, interview process notes, tool lessons, and questions for the hive mind.</p>
+        </div>
+        <form class="composer glass-card" id="postForm">
+          <label>
+            Category
+            <select name="type" required>
+              <option value="experience">Experience</option>
+              <option value="job">Job Opportunity</option>
+              <option value="referral">Referral</option>
+              <option value="interview">Interview Process</option>
+              <option value="tooling">Tooling</option>
+              <option value="question">Question</option>
+            </select>
+          </label>
+          <label>
+            Title
+            <input name="title" minlength="8" maxlength="120" placeholder="Example: SDET interview loop at a fintech" required />
+          </label>
+          <label>
+            Share safely
+            <textarea name="body" minlength="30" maxlength="900" placeholder="Anonymize names, phone numbers, private emails, addresses, secrets, and confidential details." required></textarea>
+          </label>
+          <label>
+            Tags
+            <input name="tags" placeholder="playwright, api, interview" />
+          </label>
+          <button class="button primary" type="submit">Publish safe signal</button>
+          <p class="form-note" id="postStatus">Sign in with a verified email to publish.</p>
+        </form>
+      </section>
+
+      <section class="feed section-shell" id="feed" aria-live="polite"></section>
+
+      <section id="safety" class="section-shell safety-grid">
+        <article class="glass-card large-card">
+          <p class="eyebrow">Trust Architecture</p>
+          <h2>Security and privacy are part of the product, not a banner.</h2>
+          <p>Authentication uses server-side validation, strong password rules, PBKDF2 hashing, HTTP-only session cookies, email verification, rate limiting, and private-data scanning before posts are accepted.</p>
+        </article>
+        <article class="guard-card">
+          <span>01</span>
+          <h3>No private contact data</h3>
+          <p>Posts that look like emails, phone numbers, addresses, tokens, or secrets are rejected.</p>
+        </article>
+        <article class="guard-card">
+          <span>02</span>
+          <h3>Verified identities</h3>
+          <p>Email verification is required before sign-in and publishing.</p>
+        </article>
+        <article class="guard-card">
+          <span>03</span>
+          <h3>Modular scale path</h3>
+          <p>APIs are separated from the UI, ready to move from local JSON storage to Postgres, queues, and managed email.</p>
+        </article>
+      </section>
+
+      <section id="opportunities" class="section-shell">
+        <div class="section-heading">
+          <p class="eyebrow">Opportunity Deck</p>
+          <h2>Career intelligence for every tester path.</h2>
+        </div>
+        <div class="opportunity-grid" id="opportunitiesGrid"></div>
+      </section>
+
+      <section id="join" class="section-shell join-grid">
+        <div class="join-copy">
+          <p class="eyebrow">Join the Nexus</p>
+          <h2>Build a verified tester profile in under a minute.</h2>
+          <p>Use a professional username and keep your profile intentionally non-private. The system stores passwords only as salted hashes.</p>
+        </div>
+        <form class="auth-card glass-card" id="registerForm">
+          <label>
+            Username
+            <input name="username" autocomplete="username" pattern="[A-Za-z0-9_-]{3,24}" placeholder="qualitypilot" required />
+          </label>
+          <label>
+            Email
+            <input name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
+          </label>
+          <label>
+            Password
+            <input name="password" type="password" autocomplete="new-password" minlength="12" placeholder="12+ chars, mixed symbols" required />
+          </label>
+          <label>
+            Tester type
+            <select name="testerRole" required>
+              <option value="manual">Manual Tester</option>
+              <option value="automation">Automation Engineer</option>
+              <option value="performance">Performance Tester</option>
+              <option value="security">Security Tester</option>
+              <option value="accessibility">Accessibility Tester</option>
+              <option value="mobile">Mobile Tester</option>
+              <option value="game">Game Tester</option>
+              <option value="leadership">QA Leadership</option>
+              <option value="student">Student</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <label>
+            Region
+            <input name="region" placeholder="Global, APAC, Europe, Remote" />
+          </label>
+          <label>
+            Bio
+            <textarea name="bio" maxlength="160" placeholder="Short professional summary. No private contact details."></textarea>
+          </label>
+          <button class="button primary" type="submit">Create secure account</button>
+          <p class="form-note" id="registerStatus"></p>
+        </form>
+      </section>
+    </main>
+
+    <dialog class="auth-dialog" id="authDialog">
+      <form method="dialog" class="dialog-close-form">
+        <button class="icon-button" aria-label="Close sign in">×</button>
+      </form>
+      <form class="auth-card" id="loginForm">
+        <p class="eyebrow">Verified Access</p>
+        <h2>Sign in</h2>
+        <label>
+          Email
+          <input name="email" type="email" autocomplete="email" required />
+        </label>
+        <label>
+          Password
+          <input name="password" type="password" autocomplete="current-password" required />
+        </label>
+        <button class="button primary" type="submit">Enter Nexus</button>
+        <p class="form-note" id="loginStatus"></p>
+      </form>
+    </dialog>
+
+    <footer class="site-footer">
+      <p>Testers Nexus is built for safe global QA collaboration. Never post private details, secrets, or confidential company data.</p>
+      <button class="button ghost" id="logoutButton" hidden>Sign out</button>
+    </footer>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>
