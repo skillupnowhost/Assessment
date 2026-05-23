@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testing Strategy Generator — Enterprise Edition</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --surface3: #30363d;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --accent3: #d2a8ff;
+    --accent4: #ffa657;
+    --accent5: #ff7b72;
+    --accent6: #79c0ff;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --text3: #6e7681;
+    --radius: 8px;
+    --radius-lg: 12px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --functional: #3fb950;
+    --performance: #ffa657;
+    --security: #ff7b72;
+    --accessibility: #d2a8ff;
+    --reliability: #58a6ff;
+    --business: #79c0ff;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+
+  .logo {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+
+  header h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
+  header .subtitle { font-size: 0.75rem; color: var(--text2); margin-top: 2px; }
+
+  .header-badges {
+    margin-left: auto;
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+
+  .badge {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border: 1px solid;
+  }
+
+  .badge-blue  { color: var(--accent);  border-color: var(--accent);  background: rgba(88,166,255,0.08); }
+  .badge-green { color: var(--accent2); border-color: var(--accent2); background: rgba(63,185,80,0.08); }
+
+  /* ── Layout ── */
+  main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  @media (max-width: 1000px) {
+    main { grid-template-columns: 1fr; }
+  }
+
+  /* ── Panel ── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .panel-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .panel-header h2 { font-size: 0.9rem; font-weight: 600; }
+  .panel-icon { font-size: 1rem; }
+  .panel-body { padding: 20px; }
+
+  /* ── Form ── */
+  .field + .field { margin-top: 16px; }
+
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text2);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  input[type="text"], textarea, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: 0.875rem;
+    padding: 10px 12px;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  input[type="text"]:focus,
+  textarea:focus,
+  select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(88,166,255,0.15);
+  }
+
+  textarea { resize: vertical; min-height: 120px; }
+
+  select option { background: var(--surface2); }
+
+  .toggle-group {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+
+  .toggle {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text2);
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .toggle.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .toggle-func.active  { background: var(--functional);    border-color: var(--functional);    color: #000; }
+  .toggle-perf.active  { background: var(--performance);   border-color: var(--performance);   color: #000; }
+  .toggle-sec.active   { background: var(--security);      border-color: var(--security);      color: #fff; }
+  .toggle-a11y.active  { background: var(--accessibility); border-color: var(--accessibility); color: #000; }
+  .toggle-rel.active   { background: var(--reliability);   border-color: var(--reliability);   color: #000; }
+  .toggle-biz.active   { background: var(--business);      border-color: var(--business);      color: #000; }
+
+  /* ── Generate Button ── */
+  #generateBtn {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--accent), #1a7fe8);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #generateBtn:hover { opacity: 0.9; transform: translateY(-1px); }
+  #generateBtn:active { transform: translateY(0); }
+  #generateBtn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .btn-spinner {
+    display: none;
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    margin: 0 auto;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Output Panel ── */
+  .output-panel { position: relative; min-height: 400px; }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 32px;
+    text-align: center;
+    color: var(--text3);
+    gap: 12px;
+  }
+
+  .empty-state .big-icon { font-size: 3rem; opacity: 0.4; }
+  .empty-state p { font-size: 0.875rem; max-width: 300px; }
+
+  /* ── Tabs ── */
+  .tabs-bar {
+    display: flex;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    scrollbar-width: none;
+  }
+
+  .tabs-bar::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    color: var(--text2);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex; align-items: center; gap: 6px;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    position: relative;
+  }
+
+  .tab-btn:hover { color: var(--text); }
+
+  .tab-btn.active {
+    color: var(--text);
+    border-bottom-color: var(--tab-color, var(--accent));
+  }
+
+  .tab-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--tab-color, var(--accent));
+    flex-shrink: 0;
+  }
+
+  .tab-count {
+    background: var(--surface3);
+    border-radius: 10px;
+    padding: 1px 6px;
+    font-size: 0.7rem;
+    color: var(--text2);
+  }
+
+  /* ── Tab Panes ── */
+  .tab-pane { display: none; padding: 20px; }
+  .tab-pane.active { display: block; animation: fadeIn 0.2s ease; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  /* ── Summary Row ── */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    text-align: center;
+    border-top: 3px solid var(--card-color, var(--accent));
+  }
+
+  .stat-card .num { font-size: 1.75rem; font-weight: 700; color: var(--card-color, var(--accent)); }
+  .stat-card .lbl { font-size: 0.7rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+
+  /* ── Test Case Cards ── */
+  .test-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+    border-left: 3px solid var(--card-accent, var(--accent));
+    transition: box-shadow 0.15s;
+  }
+
+  .test-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+
+  .test-card-header {
+    display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .test-id {
+    font-family: 'Courier New', monospace;
+    font-size: 0.7rem;
+    color: var(--text3);
+    background: var(--surface3);
+    padding: 2px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .test-title { font-size: 0.9rem; font-weight: 600; flex: 1; }
+
+  .test-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+
+  .chip {
+    padding: 2px 9px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border: 1px solid currentColor;
+  }
+
+  .chip-priority-critical { color: #ff7b72; background: rgba(255,123,114,0.1); }
+  .chip-priority-high     { color: #ffa657; background: rgba(255,166,87,0.1); }
+  .chip-priority-medium   { color: #e3b341; background: rgba(227,179,65,0.1); }
+  .chip-priority-low      { color: #3fb950; background: rgba(63,185,80,0.1); }
+  .chip-automation        { color: var(--text2); background: var(--surface3); border-color: var(--surface3); }
+  .chip-tool              { color: var(--accent3); background: rgba(210,168,255,0.1); border-color: rgba(210,168,255,0.3); }
+
+  .test-body { font-size: 0.82rem; color: var(--text2); line-height: 1.7; }
+
+  .test-body strong { color: var(--text); }
+
+  .test-steps { margin-top: 10px; }
+
+  .test-steps ol {
+    padding-left: 20px;
+    margin-top: 4px;
+    color: var(--text2);
+    font-size: 0.82rem;
+    display: grid; gap: 3px;
+  }
+
+  .test-assertions {
+    margin-top: 10px;
+    background: var(--surface3);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+  }
+
+  .test-assertions .assert-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text3);
+    margin-bottom: 6px;
+  }
+
+  .assert-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.8rem; color: var(--text2); margin-bottom: 3px;
+  }
+
+  .assert-check { color: var(--accent2); flex-shrink: 0; }
+
+  /* ── Confidence Meter ── */
+  .confidence-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .confidence-label { font-size: 0.72rem; color: var(--text3); white-space: nowrap; }
+
+  .confidence-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--surface3);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .confidence-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--fill-start, #3fb950), var(--fill-end, #58a6ff));
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .confidence-pct {
+    font-size: 0.78rem;
+    font-weight: 700;
+    min-width: 36px;
+    text-align: right;
+  }
+
+  /* ── Microservice Tags ── */
+  .ms-tags {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+  }
+
+  .ms-tag {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    background: rgba(88,166,255,0.08);
+    border: 1px solid rgba(88,166,255,0.2);
+    color: var(--accent6);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Coverage Matrix ── */
+  .coverage-matrix {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    margin-top: 8px;
+  }
+
+  .coverage-matrix th {
+    background: var(--surface3);
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text2);
+    font-weight: 600;
+  }
+
+  .coverage-matrix td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    vertical-align: middle;
+  }
+
+  .coverage-matrix tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .mini-bar {
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .mini-bar-track {
+    flex: 1; height: 4px;
+    background: var(--surface3);
+    border-radius: 2px; overflow: hidden;
+  }
+
+  .mini-bar-fill {
+    height: 100%; border-radius: 2px;
+    transition: width 0.8s ease;
+  }
+
+  /* ── Architecture Section ── */
+  .arch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .arch-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+  }
+
+  .arch-card .arch-icon { font-size: 1.4rem; margin-bottom: 8px; }
+  .arch-card .arch-title { font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; }
+  .arch-card .arch-desc { font-size: 0.75rem; color: var(--text2); line-height: 1.5; }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+  /* ── Loading overlay ── */
+  .loading-overlay {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(13,17,23,0.85);
+    border-radius: var(--radius-lg);
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+    backdrop-filter: blur(4px);
+  }
+
+  .loading-overlay.active { display: flex; }
+
+  .loading-ring {
+    width: 48px; height: 48px;
+    border: 3px solid var(--surface3);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .loading-text { font-size: 0.875rem; color: var(--text2); }
+  .loading-sub  { font-size: 0.75rem; color: var(--text3); }
+
+  /* ── Notification ── */
+  #toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 18px;
+    font-size: 0.85rem;
+    color: var(--text);
+    box-shadow: var(--shadow);
+    z-index: 999;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  #toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ── Export bar ── */
+  .export-bar {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .export-btn {
+    padding: 7px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface3);
+    color: var(--text2);
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .export-btn:hover { color: var(--text); border-color: var(--accent); }
+
+  /* ── Divider ── */
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+  /* ── Section heading ── */
+  .section-heading {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .section-heading::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── Range slider ── */
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%; height: 4px;
+    background: var(--surface3);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    transition: box-shadow 0.15s;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 0 4px rgba(88,166,255,0.2);
+  }
+
+  .range-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text3); margin-top: 4px; }
+  .range-value  { font-size: 0.8rem; color: var(--accent); font-weight: 600; float: right; }
+
+  /* ── Checkbox ── */
+  .checkbox-group { display: grid; gap: 8px; }
+
+  .check-item {
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer; font-size: 0.82rem; color: var(--text2);
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    transition: all 0.15s;
+  }
+
+  .check-item:hover { color: var(--text); border-color: var(--accent); }
+  .check-item input { accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer; }
+  .check-item input:checked + span { color: var(--text); }
+
+  /* ── Tooltip ── */
+  [data-tip] { position: relative; cursor: help; }
+  [data-tip]::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%; transform: translateX(-50%);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 0.72rem;
+    padding: 5px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 50;
+  }
+
+  [data-tip]:hover::after { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">⚡</div>
+  <div>
+    <h1>Testing Strategy Generator</h1>
+    <div class="subtitle">Enterprise &amp; Microservice Architecture Edition</div>
+  </div>
+  <div class="header-badges">
+    <span class="badge badge-blue">v2.4.0</span>
+    <span class="badge badge-green">Production Ready</span>
+  </div>
+</header>
+
+<main>
+  <!-- ── LEFT: Input Panel ── -->
+  <aside>
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-icon">⚙️</span>
+        <h2>Configuration</h2>
+      </div>
+      <div class="panel-body">
+
+        <div class="field">
+          <label>Application Name</label>
+          <input type="text" id="appName" placeholder="e.g. PaymentService, UserPortal" value="OrderManagementService">
+        </div>
+
+        <div class="field">
+          <label>Architecture Type</label>
+          <select id="archType">
+            <option value="microservices">Microservices (Kubernetes + Service Mesh)</option>
+            <option value="monolith">Modular Monolith</option>
+            <option value="serverless">Serverless / Event-Driven</option>
+            <option value="hybrid">Hybrid (Micro + Monolith)</option>
+            <option value="event-sourced">Event Sourced + CQRS</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Technology Stack</label>
+          <input type="text" id="techStack" placeholder="e.g. Node.js, PostgreSQL, Redis, Kafka" value="Java Spring Boot, PostgreSQL, Redis, Apache Kafka, Docker">
+        </div>
+
+        <div class="field">
+          <label>Feature Description</label>
+          <textarea id="featureDesc" placeholder="Describe the feature or system under test…">Multi-tenant order management system with payment processing, inventory reservation, real-time notifications via WebSocket, and fraud detection integration. Handles 50k orders/day peak load with strict SLA of 99.9% uptime and sub-200ms API response time.</textarea>
+        </div>
+
+        <div class="divider"></div>
+        <div class="section-heading">Strategy Scope</div>
+
+        <div class="field">
+          <div class="toggle-group" id="scopeToggles">
+            <div class="toggle toggle-func active" data-scope="functional">Functional</div>
+            <div class="toggle toggle-perf active" data-scope="performance">Performance</div>
+            <div class="toggle toggle-sec active" data-scope="security">Security</div>
+            <div class="toggle toggle-a11y active" data-scope="accessibility">Accessibility</div>
+            <div class="toggle toggle-rel active" data-scope="reliability">Reliability</div>
+            <div class="toggle toggle-biz active" data-scope="business">Business Logic</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="section-heading">Advanced Parameters</div>
+
+        <div class="field">
+          <label>
+            Target Coverage
+            <span class="range-value" id="coverageVal">85%</span>
+          </label>
+          <input type="range" id="coverageRange" min="50" max="100" value="85" step="5">
+          <div class="range-labels"><span>50%</span><span>75%</span><span>100%</span></div>
+        </div>
+
+        <div class="field">
+          <label>
+            Test Depth
+            <span class="range-value" id="depthVal">Advanced</span>
+          </label>
+          <input type="range" id="depthRange" min="1" max="3" value="2" step="1">
+          <div class="range-labels"><span>Basic</span><span>Advanced</span><span>Exhaustive</span></div>
+        </div>
+
+        <div class="field">
+          <div class="checkbox-group">
+            <label class="check-item">
+              <input type="checkbox" id="chkMicroservice" checked>
+              <span>Microservice-specific patterns (contract, service mesh)</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" id="chkDistributed" checked>
+              <span>Distributed systems concerns (tracing, partitions)</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" id="chkCI">
+              <span>CI/CD pipeline integration scripts</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox" id="chkCompliance" checked>
+              <span>Regulatory compliance mapping (GDPR, PCI-DSS)</span>
+            </label>
+          </div>
+        </div>
+
+        <button id="generateBtn" onclick="generate()">
+          <span id="btnText">⚡ Generate Testing Strategy</span>
+          <div class="btn-spinner" id="btnSpinner"></div>
+        </button>
+
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── RIGHT: Output Panel ── -->
+  <section class="panel output-panel" id="outputPanel">
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-ring"></div>
+      <div class="loading-text">Analyzing System Architecture</div>
+      <div class="loading-sub" id="loadingPhase">Parsing feature description…</div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState">
+      <div class="big-icon">🧪</div>
+      <h3 style="font-size:1rem; color: var(--text2);">No Strategy Generated Yet</h3>
+      <p>Configure your application parameters on the left, select strategy scopes, and click Generate to produce a complete, categorized testing strategy.</p>
+    </div>
+
+    <!-- Output (hidden until generated) -->
+    <div id="outputContent" style="display:none;">
+      <div class="tabs-bar" id="tabsBar"></div>
+      <div id="tabPanes"></div>
+      <div class="export-bar">
+        <button class="export-btn" onclick="exportJSON()">📥 Export JSON</button>
+        <button class="export-btn" onclick="exportMarkdown()">📄 Export Markdown</button>
+        <button class="export-btn" onclick="copyAll()">📋 Copy All</button>
+        <span style="margin-left:auto; font-size:0.75rem; color:var(--text3); align-self:center;" id="genTimestamp"></span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  DATA LAYER — Test strategy knowledge base
+// ═══════════════════════════════════════════════════════
+
+const CATEGORY_META = {
+  functional: {
+    label: 'Functional',
+    icon: '✅',
+    color: '#3fb950',
+    tabClass: 'toggle-func',
+    description: 'Core feature validation, regression, and end-to-end user journeys'
+  },
+  performance: {
+    label: 'Performance',
+    icon: '⚡',
+    color: '#ffa657',
+    tabClass: 'toggle-perf',
+    description: 'Throughput, latency, load, stress, and scalability metrics'
+  },
+  security: {
+    label: 'Security',
+    icon: '🔐',
+    color: '#ff7b72',
+    tabClass: 'toggle-sec',
+    description: 'Vulnerability scanning, penetration vectors, auth boundaries, and data encryption'
+  },
+  accessibility: {
+    label: 'Accessibility',
+    icon: '♿',
+    color: '#d2a8ff',
+    tabClass: 'toggle-a11y',
+    description: 'WCAG compliance, screen-reader compatibility, and keyboard navigation'
+  },
+  reliability: {
+    label: 'Reliability',
+    icon: '🛡️',
+    color: '#58a6ff',
+    tabClass: 'toggle-rel',
+    description: 'Chaos engineering, fault tolerance, circuit-breaking, and self-healing'
+  },
+  business: {
+    label: 'Business Logic',
+    icon: '💼',
+    color: '#79c0ff',
+    tabClass: 'toggle-biz',
+    description: 'Edge cases, data state transitions, and complex domain workflow integrity'
+  },
+  overview: {
+    label: 'Overview',
+    icon: '📊',
+    color: '#8b949e',
+    description: 'Summary and coverage matrix'
+  }
+};
+
+// ═══════════════════════════════════════════════════════
+//  GENERATOR ENGINE
+// ═══════════════════════════════════════════════════════
+
+let generatedData = null;
+
+const LOADING_PHASES = [
+  'Parsing feature description…',
+  'Analyzing architecture topology…',
+  'Mapping domain boundaries…',
+  'Classifying test categories…',
+  'Scoring confidence levels…',
+  'Building microservice test matrix…',
+  'Generating test case corpus…',
+  'Compiling final strategy…'
+];
+
+function generate() {
+  const appName    = document.getElementById('appName').value.trim() || 'Application';
+  const archType   = document.getElementById('archType').value;
+  const techStack  = document.getElementById('techStack').value.trim();
+  const featureDesc= document.getElementById('featureDesc').value.trim();
+  const coverage   = parseInt(document.getElementById('coverageRange').value);
+  const depth      = parseInt(document.getElementById('depthRange').value);
+  const microPat   = document.getElementById('chkMicroservice').checked;
+  const distrib    = document.getElementById('chkDistributed').checked;
+  const compliance = document.getElementById('chkCompliance').checked;
+
+  const activeScopes = [...document.querySelectorAll('.toggle.active[data-scope]')]
+    .map(t => t.dataset.scope);
+
+  if (activeScopes.length === 0) {
+    toast('Select at least one strategy scope.', '⚠️');
+    return;
+  }
+
+  // Start loading
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  document.getElementById('btnText').style.display = 'none';
+  document.getElementById('btnSpinner').style.display = 'block';
+  document.getElementById('loadingOverlay').classList.add('active');
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('outputContent').style.display = 'none';
+
+  let phase = 0;
+  const phaseInterval = setInterval(() => {
+    if (phase < LOADING_PHASES.length) {
+      document.getElementById('loadingPhase').textContent = LOADING_PHASES[phase++];
+    }
+  }, 220);
+
+  setTimeout(() => {
+    clearInterval(phaseInterval);
+
+    generatedData = buildStrategy({
+      appName, archType, techStack, featureDesc,
+      coverage, depth, microPat, distrib, compliance,
+      scopes: activeScopes
+    });
+
+    renderOutput(generatedData);
+
+    document.getElementById('loadingOverlay').classList.remove('active');
+    document.getElementById('outputContent').style.display = 'block';
+    btn.disabled = false;
+    document.getElementById('btnText').style.display = 'inline';
+    document.getElementById('btnSpinner').style.display = 'none';
+    document.getElementById('genTimestamp').textContent =
+      'Generated ' + new Date().toLocaleTimeString();
+
+    toast('Strategy generated — ' + generatedData.totalCases + ' test cases across ' + activeScopes.length + ' categories.', '✅');
+  }, 1900);
+}
+
+// ── keyword-based confidence scoring ──────────────────
+function scoreConfidence(text, category, featureDesc) {
+  const desc = (featureDesc + ' ' + text).toLowerCase();
+  const keywordMap = {
+    functional:    ['login','register','crud','create','read','update','delete','form','submit','navigate','route','api','endpoint','user','workflow','feature'],
+    performance:   ['load','latency','throughput','rps','tps','concurren','stress','spike','benchmark','p95','p99','sla','response time','scale','capacity'],
+    security:      ['auth','jwt','token','sql injection','xss','csrf','encrypt','tls','ssl','oauth','rbac','privilege','vuln','penetrat','secret','sensitive'],
+    accessibility: ['wcag','aria','screen reader','keyboard','focus','contrast','alt text','tab order','a11y','color blind','semantic','label','landmark'],
+    reliability:   ['chaos','failover','fault','circuit break','retry','timeout','partition','self-heal','resilience','disaster','recovery','slo','sla','uptime'],
+    business:      ['domain','rule','workflow','state','transition','edge case','business','policy','compliance','invariant','saga','compensation','idempotent']
+  };
+  const words = keywordMap[category] || [];
+  const hits = words.filter(w => desc.includes(w)).length;
+  const base = Math.min(95, 50 + (hits / Math.max(words.length, 1)) * 50);
+  const jitter = (Math.random() * 10) - 5;
+  return Math.max(40, Math.min(99, Math.round(base + jitter)));
+}
+
+// ── main builder ──────────────────────────────────────
+function buildStrategy(cfg) {
+  const { appName, archType, techStack, featureDesc, coverage, depth, microPat, distrib, compliance, scopes } = cfg;
+
+  const isMicro      = archType === 'microservices' || archType === 'hybrid';
+  const isEventDriven= archType === 'serverless' || archType === 'event-sourced';
+  const stackLower   = techStack.toLowerCase();
+  const descLower    = featureDesc.toLowerCase();
+
+  const hasKafka  = stackLower.includes('kafka') || stackLower.includes('rabbitmq');
+  const hasRedis  = stackLower.includes('redis') || stackLower.includes('cache');
+  const hasDocker = stackLower.includes('docker') || stackLower.includes('kubernetes') || stackLower.includes('k8s');
+  const hasDB     = stackLower.includes('postgres') || stackLower.includes('mysql') || stackLower.includes('mongo') || stackLower.includes('sql');
+  const isPayment = descLower.includes('payment') || descLower.includes('order') || descLower.includes('transact');
+  const hasAuth   = descLower.includes('auth') || descLower.includes('login') || descLower.includes('jwt') || descLower.includes('tenant');
+  const isRealtime= descLower.includes('websocket') || descLower.includes('real-time') || descLower.includes('notification');
+
+  const depthLabel = ['Basic','Advanced','Exhaustive'][depth - 1];
+  const categories = {};
+
+  // ─────────── FUNCTIONAL ───────────
+  if (scopes.includes('functional')) {
+    categories.functional = {
+      meta: CATEGORY_META.functional,
+      cases: [
+        mkCase('FN-001', 'Happy Path — Core Workflow End-to-End', 'critical', 'Selenium/Cypress', 'Automated',
+          featureDesc,
+          ['Navigate to the primary entry point of the feature', 'Provide valid inputs across all required fields', 'Submit the form or trigger the primary action', 'Verify system state change in DB/cache', 'Confirm response payload matches OpenAPI contract', 'Assert UI reflects updated state within SLA bounds'],
+          ['HTTP 200/201 returned', 'Database record created/updated correctly', 'Response payload validates against schema', 'UI updated within ' + (isRealtime ? '100ms' : '500ms')],
+          featureDesc, 'functional',
+          isMicro ? ['Contract Testing', 'Service Mesh', 'API Gateway'] : ['Integration', 'E2E']),
+
+        mkCase('FN-002', 'Regression Suite — Core Feature Set', 'high', 'Jest/Vitest', 'Automated',
+          'Ensure no previously passing functionality is broken by the new changes.',
+          ['Execute full regression suite against all API endpoints', 'Run UI regression across all critical user journeys', 'Verify backward compatibility of API contracts', 'Cross-browser validation for web surfaces (Chrome, Firefox, Safari, Edge)', 'Mobile responsiveness regression'],
+          ['All ' + Math.round(coverage * 0.9) + '% of previously passing tests still pass', 'No new failures in unrelated modules', 'CI pipeline gate passes'],
+          featureDesc, 'functional',
+          ['Regression', 'CI Gate', 'Backward Compat']),
+
+        mkCase('FN-003', 'Input Validation — Boundary & Negative Cases', 'high', 'Jest + Supertest', 'Automated',
+          'Verify the system correctly rejects invalid, malformed, or boundary-exceeding inputs.',
+          ['Submit empty required fields — expect 400', 'Submit oversized payloads (>1MB) — expect 413', 'Inject special characters and unicode sequences', 'Test numeric boundaries: MIN_INT, MAX_INT, negative values', 'Submit duplicate records — expect 409 or idempotent response', 'Provide stale/expired tokens — expect 401'],
+          ['Appropriate HTTP error codes returned (400, 409, 413, 422)', 'Error messages are safe (no stack traces or internal paths leaked)', 'Rate limiting triggers correctly at threshold'],
+          featureDesc, 'functional',
+          ['Negative Testing', 'Input Validation', 'Error Handling']),
+
+        ...(hasAuth ? [mkCase('FN-004', 'Multi-tenant Isolation & RBAC Enforcement', 'critical', 'Postman/Newman', 'Automated',
+          'Validate that tenant data is strictly isolated and role-based access controls are enforced at all endpoints.',
+          ['Authenticate as Tenant A, attempt to read Tenant B data — expect 403', 'Test each role (Admin, Operator, ReadOnly, Guest) against protected endpoints', 'Verify JWT claims are validated server-side (not just client-side)', 'Attempt privilege escalation via manipulated JWT payload', 'Test session expiry and token refresh flows'],
+          ['Cross-tenant data leakage returns 403 (never 404)', 'RBAC matrix fully enforced for all ' + Math.round(coverage) + '% of endpoints', 'Token manipulation attempts are rejected'],
+          featureDesc, 'functional',
+          ['Multi-tenant', 'RBAC', 'Auth Boundary', 'Zero Trust'])] : []),
+
+        mkCase('FN-005', 'API Contract Validation — Consumer-Driven', 'high', 'Pact / Spring Cloud Contract', 'Automated',
+          'Verify that provider services fulfill all contracts expected by downstream consumers.',
+          ['Publish consumer pacts to Pact Broker', 'Run provider verification against all registered consumers', 'Test backward compatibility across last 2 major API versions', 'Validate OpenAPI spec matches actual runtime behavior', 'Test optional vs required fields per consumer expectations'],
+          ['All consumer pacts verified green', 'No breaking changes introduced without version bump', 'API spec drift < 0%'],
+          featureDesc, 'functional',
+          isMicro ? ['Consumer-Driven Contracts', 'Pact Broker', 'API Versioning'] : ['API Contracts', 'Compatibility']),
+
+        ...(depth >= 2 ? [mkCase('FN-006', 'State Machine Transitions — Complete Coverage', 'medium', 'Custom State Machine Runner', 'Automated',
+          'Exercise all valid and invalid state transitions within the domain model.',
+          ['Map all states: PENDING → PROCESSING → COMPLETED / CANCELLED / FAILED', 'Test each valid transition with happy-path input', 'Attempt each invalid transition — expect rejection', 'Test idempotency of transitions (applying same event twice)', 'Verify concurrent transition attempts produce consistent final state'],
+          ['All valid transitions succeed', 'All invalid transitions rejected with correct error', 'Idempotency guaranteed: duplicate events produce no side effects', 'Final state is consistent under concurrent access'],
+          featureDesc, 'functional',
+          ['State Machine', 'Domain Events', 'Idempotency'])] : [])
+      ]
+    };
+  }
+
+  // ─────────── PERFORMANCE ───────────
+  if (scopes.includes('performance')) {
+    categories.performance = {
+      meta: CATEGORY_META.performance,
+      cases: [
+        mkCase('PERF-001', 'Baseline Load Test — Normal Traffic Profile', 'critical', 'k6 / Gatling', 'Automated',
+          'Establish performance baselines under expected production load.',
+          ['Ramp up to target RPS over 5 minutes', 'Sustain peak load for 30 minutes', 'Monitor: p50, p95, p99 latency, error rate, throughput', 'Track CPU, memory, thread pool saturation', 'Observe auto-scaling behavior (if ' + (hasDocker ? 'Kubernetes HPA' : 'applicable') + ')', 'Record baseline metrics for regression comparison'],
+          ['p95 latency < 200ms at target RPS', 'Error rate < 0.1%', 'Throughput meets SLA target', 'No memory leaks detected over 30min'],
+          featureDesc, 'performance',
+          hasDocker ? ['HPA', 'Pod Autoscaling', 'Resource Limits', 'Prometheus'] : ['Load Testing', 'Metrics', 'SLA']),
+
+        mkCase('PERF-002', 'Stress Test — Beyond Capacity Envelope', 'high', 'k6 / JMeter', 'Automated',
+          'Determine system breaking point and validate graceful degradation behavior.',
+          ['Incrementally increase load until error rate exceeds 5%', 'Identify bottleneck: DB connection pool, CPU, memory, network I/O', 'Verify system returns to stable state when load is reduced', 'Test circuit breaker activation thresholds', 'Validate back-pressure propagation through async queues'],
+          ['System degrades gracefully (no cascading failures)', 'Circuit breakers open within expected thresholds', 'Recovery time < 60 seconds after load removal', 'Breaking point documented for capacity planning'],
+          featureDesc, 'performance',
+          ['Stress Testing', 'Circuit Breaker', 'Graceful Degradation', hasKafka ? 'Kafka Back-pressure' : 'Queue Back-pressure']),
+
+        mkCase('PERF-003', 'Spike Test — Sudden Traffic Burst', 'high', 'k6', 'Automated',
+          'Validate system behavior under sudden, unexpected traffic spikes (flash sales, viral events).',
+          ['Inject 10× baseline load in < 30 seconds', 'Monitor queue depth growth and drain rate', 'Check cache hit ratio under cold-start conditions', 'Validate connection pooling does not exhaust', 'Test queue-based load leveling if async architecture'],
+          ['Request queue does not exceed 10s wait time', 'Cache hit ratio maintained > 80% after warmup', 'DB connection pool not exhausted', '0 unhandled OOM errors'],
+          featureDesc, 'performance',
+          ['Spike Testing', hasRedis ? 'Redis Cache' : 'Cache Layer', 'Connection Pool']),
+
+        mkCase('PERF-004', 'Scalability Test — Horizontal Scaling Validation', 'medium', 'k6 + Kubernetes', 'Automated',
+          'Verify that throughput scales linearly (or better) with added compute resources.',
+          ['Measure baseline throughput at 1 replica', 'Double replicas — measure throughput gain', 'Triple replicas — confirm near-linear scaling', 'Check for session affinity issues', 'Validate distributed cache coherence', 'Measure startup time of new pods under load'],
+          ['Throughput scales > 85% linearly per added replica', 'No session affinity-related errors', 'Pod startup < 30 seconds', 'Distributed cache coherent after scale-out'],
+          featureDesc, 'performance',
+          isMicro ? ['Horizontal Scaling', 'Service Discovery', 'Load Balancing', 'Kubernetes'] : ['Horizontal Scaling', 'Load Balancing']),
+
+        ...(depth >= 2 ? [mkCase('PERF-005', 'Database Query Performance — Slow Query Analysis', 'medium', 'pgBadger / Explain Analyzer', 'Automated',
+          'Identify and validate query performance under realistic data volumes.',
+          ['Seed DB with production-scale data volume (10M+ rows)', 'Run EXPLAIN ANALYZE on all critical query paths', 'Verify all hot queries use appropriate indexes', 'Test N+1 query absence via query count assertions', 'Validate connection pool sizing vs. concurrent load'],
+          ['No full table scans on tables > 10k rows', 'Query execution time < 50ms at p99', 'N+1 queries absent in ORM layer', 'Index coverage > 95% for hot paths'],
+          featureDesc, 'performance',
+          [hasDB ? 'PostgreSQL Tuning' : 'DB Optimization', 'Query Analysis', 'Index Coverage'])] : [])
+      ]
+    };
+  }
+
+  // ─────────── SECURITY ───────────
+  if (scopes.includes('security')) {
+    categories.security = {
+      meta: CATEGORY_META.security,
+      cases: [
+        mkCase('SEC-001', 'OWASP Top 10 — Automated Vulnerability Scan', 'critical', 'OWASP ZAP / Semgrep', 'Automated',
+          'Comprehensive automated scanning against all OWASP Top 10 vulnerability classes.',
+          ['Run OWASP ZAP active scan against all API endpoints', 'Static analysis (SAST) across full codebase for injection flaws', 'Verify SQL/NoSQL injection prevention at all data entry points', 'Test for stored and reflected XSS in all output contexts', 'Scan dependency tree for known CVEs (npm audit / Trivy)', 'Verify CORS policy is restrictive and correct'],
+          ['Zero critical or high severity findings unmitigated', 'Dependency CVE score < CVSS 7.0 in production dependencies', 'CORS allows only whitelisted origins', 'All SQL queries use parameterized statements'],
+          featureDesc, 'security',
+          ['OWASP Top 10', 'SAST', 'CVE Scanning', 'ZAP']),
+
+        mkCase('SEC-002', 'Authentication & Authorization — Penetration Vectors', 'critical', 'Burp Suite / Custom Scripts', 'Manual + Automated',
+          'Test all authentication boundaries and authorization control points for bypass vulnerabilities.',
+          ['Attempt JWT algorithm confusion attack (RS256 → HS256 downgrade)', 'Test token replay after logout/revocation', 'Verify refresh token rotation is enforced', 'Test horizontal privilege escalation (access other users\' resources)', 'Test vertical privilege escalation (elevate from user to admin)', 'Test OAuth PKCE flow for code injection vulnerabilities', 'Verify MFA cannot be bypassed via API direct calls'],
+          ['JWT algorithm confusion attack rejected', 'Revoked tokens return 401 within TTL expiry', 'Horizontal/vertical escalation blocked at service layer', 'OAuth PKCE validated server-side'],
+          featureDesc, 'security',
+          ['JWT Security', 'OAuth 2.0', 'PKCE', 'Privilege Escalation', hasAuth ? 'Multi-tenant Auth' : 'Auth Boundary']),
+
+        ...(isPayment ? [mkCase('SEC-003', 'Payment Data Security — PCI-DSS Validation', 'critical', 'Tokenization + Audit Trace', 'Automated + Manual',
+          'Validate that all payment card data handling meets PCI-DSS Level 1 compliance requirements.',
+          ['Verify PAN data is tokenized before storage — raw PANs never persisted', 'Validate TLS 1.2+ enforced for all payment API calls', 'Test that CVV is never logged or stored post-authorization', 'Audit log completeness for all payment events', 'Test key rotation procedure without service disruption', 'Validate cardholder data is excluded from error responses and logs'],
+          ['No raw PAN data in DB, logs, or responses', 'TLS 1.2+ enforced; TLS 1.0/1.1 rejected', 'CVV absent from all persistence layers', 'Audit trail 100% complete for payment lifecycle'],
+          featureDesc, 'security',
+          ['PCI-DSS', 'Tokenization', 'TLS', 'Audit Logging', 'Key Rotation'])] : []),
+
+        mkCase('SEC-004', 'API Security — Rate Limiting, Injection, Header Hygiene', 'high', 'Burp Suite + k6', 'Automated',
+          'Verify API-level security controls are correctly implemented and resistant to abuse.',
+          ['Verify rate limiting triggers at defined threshold (e.g., 100 req/min)', 'Test for header injection (Host, X-Forwarded-For manipulation)', 'Verify Content-Security-Policy, HSTS, X-Frame-Options headers present', 'Test Mass Assignment / Over-posting vulnerabilities', 'Validate error responses do not reveal internal architecture', 'Test GraphQL introspection disabled in production (if applicable)'],
+          ['Rate limiting returns 429 at correct threshold', 'All security headers scored A on securityheaders.com equivalent', 'Mass assignment vectors blocked by schema validation', 'Error responses reveal no stack traces or internal paths'],
+          featureDesc, 'security',
+          ['API Security', 'Rate Limiting', 'Security Headers', 'Mass Assignment']),
+
+        mkCase('SEC-005', 'Data Encryption — At Rest and In Transit', 'high', 'Vault + TLS Inspector', 'Automated',
+          'Ensure all sensitive data is encrypted using industry-standard algorithms at rest and in transit.',
+          ['Inspect DB storage: PII fields encrypted with AES-256', 'Verify TLS certificates are valid and not approaching expiry', 'Test that secrets are fetched from vault (not hardcoded)', 'Scan IaC/config files for hardcoded secrets (git-secrets/truffleHog)', 'Validate envelope encryption key hierarchy', 'Test backup data is encrypted'],
+          ['PII columns encrypted at rest', 'TLS cert expiry > 30 days', 'Zero secrets in source control', 'Backups encrypted with separate KMS key'],
+          featureDesc, 'security',
+          ['Encryption at Rest', 'TLS', 'Secret Management', compliance ? 'GDPR' : 'Data Privacy'])
+      ]
+    };
+  }
+
+  // ─────────── ACCESSIBILITY ───────────
+  if (scopes.includes('accessibility')) {
+    categories.accessibility = {
+      meta: CATEGORY_META.accessibility,
+      cases: [
+        mkCase('A11Y-001', 'WCAG 2.2 AA — Automated Compliance Audit', 'high', 'axe-core / Lighthouse', 'Automated',
+          'Automated scanning against WCAG 2.2 Level AA success criteria.',
+          ['Run axe-core against all page templates and component states', 'Execute Lighthouse accessibility audit (target score ≥ 90)', 'Test color contrast ratio ≥ 4.5:1 for normal text, ≥ 3:1 for large text', 'Verify all images have descriptive alt text (non-decorative)', 'Check all form inputs have associated labels', 'Validate heading hierarchy is logical (H1 → H2 → H3)'],
+          ['axe-core: 0 critical or serious violations', 'Lighthouse accessibility score ≥ 90', 'Color contrast: all text passes WCAG AA', 'All form controls have programmatic labels'],
+          featureDesc, 'accessibility',
+          ['WCAG 2.2 AA', 'axe-core', 'Lighthouse', 'Color Contrast']),
+
+        mkCase('A11Y-002', 'Screen Reader Compatibility — NVDA & VoiceOver', 'high', 'NVDA + VoiceOver', 'Manual',
+          'Manual testing with primary screen readers to ensure content is fully navigable and understandable.',
+          ['Test with NVDA on Windows + Chrome (primary)', 'Test with VoiceOver on macOS + Safari', 'Test with TalkBack on Android', 'Verify all interactive elements announce role, state, and value correctly', 'Check dynamic content updates are announced via ARIA live regions', 'Test modal dialogs: focus trapping and Escape dismissal', 'Verify custom components (dropdown, date picker, tabs) have full ARIA support'],
+          ['All interactive elements correctly announced', 'Dynamic updates announced to screen readers without page reload', 'Modal focus trap works; Escape closes modal', 'Custom components fully accessible via keyboard + SR'],
+          featureDesc, 'accessibility',
+          ['Screen Reader', 'ARIA', 'NVDA', 'VoiceOver', 'Live Regions']),
+
+        mkCase('A11Y-003', 'Keyboard Navigation — Full Operability', 'high', 'Manual + Cypress', 'Automated + Manual',
+          'Verify every feature is fully operable using keyboard only, with no mouse dependency.',
+          ['Navigate entire application using Tab, Shift+Tab, Arrow keys, Enter, Space, Escape', 'Verify visible focus indicator present at all times (CSS outline must not be removed)', 'Test skip-to-content link is present and functional', 'Test complex widgets: date pickers, dropdowns, carousels with arrow key support', 'Verify no keyboard traps outside intended modal contexts', 'Test shortcut keys documented and do not conflict with OS/browser shortcuts'],
+          ['All functionality reachable via keyboard alone', 'Focus indicator visible and meets 3:1 contrast ratio', 'Skip link present and working', 'No unintended keyboard traps'],
+          featureDesc, 'accessibility',
+          ['Keyboard Navigation', 'Focus Management', 'Skip Links', 'WCAG 2.1.1']),
+
+        mkCase('A11Y-004', 'Cognitive & Motion Accessibility', 'medium', 'Manual + axe', 'Manual',
+          'Ensure the interface does not cause harm and supports users with cognitive differences.',
+          ['Verify "prefers-reduced-motion" media query respected — animations disabled for users who opt out', 'Test timeout warnings give adequate notice and can be extended', 'Verify error messages are clear, specific, and offer recovery guidance', 'Check reading level of content is appropriate (target Flesch-Kincaid ≤ Grade 9)', 'Verify no content flashes more than 3 times per second (seizure prevention)'],
+          ['No content flashes > 3× per second', 'prefers-reduced-motion: no animations play', 'Timeout warnings appear ≥ 20 seconds before expiry', 'Error messages describe the issue and corrective action'],
+          featureDesc, 'accessibility',
+          ['Cognitive A11y', 'Reduced Motion', 'Flicker', 'WCAG 2.3.1'])
+      ]
+    };
+  }
+
+  // ─────────── RELIABILITY ───────────
+  if (scopes.includes('reliability')) {
+    categories.reliability = {
+      meta: CATEGORY_META.reliability,
+      cases: [
+        mkCase('REL-001', 'Chaos Engineering — Network Partition Simulation', 'critical', 'Chaos Monkey / Toxiproxy / Gremlin', 'Automated',
+          'Simulate network failures between services to validate fault isolation and recovery.',
+          ['Introduce 100% packet loss between Service A and Service B', 'Introduce 2000ms latency on downstream payment service calls', 'Drop 30% of packets on database connection', 'Kill primary database node — test failover to replica', 'Block DNS resolution for external service dependencies', 'Simulate availability zone outage (kill all pods in one AZ)'],
+          ['Upstream services fail gracefully with circuit breaker open', 'Fallback strategies activate within 5 seconds', 'No cascading failures propagate beyond direct consumers', 'System recovers automatically when partition heals'],
+          featureDesc, 'reliability',
+          isMicro ? ['Chaos Engineering', 'Network Partitions', 'Circuit Breaker', 'Istio/Envoy'] : ['Chaos Engineering', 'Fault Injection', 'Circuit Breaker']),
+
+        mkCase('REL-002', 'Circuit Breaker — State Transition Validation', 'critical', 'Resilience4j / Hystrix Tests', 'Automated',
+          'Validate circuit breaker state machine transitions: CLOSED → OPEN → HALF_OPEN → CLOSED.',
+          ['Simulate failure rate exceeding threshold — verify OPEN state', 'Verify OPEN state rejects requests immediately (fail-fast)', 'Wait for configured wait duration — verify HALF_OPEN state', 'Send probe request success — verify transition back to CLOSED', 'Send probe request failure — verify return to OPEN', 'Verify fallback method invoked during OPEN state', 'Test slow-call rate circuit opening (latency-based breaking)'],
+          ['Circuit opens at configured failure rate threshold', 'Fail-fast response time < 10ms in OPEN state', 'Successful half-open probe closes circuit', 'Fallback returns correct degraded response'],
+          featureDesc, 'reliability',
+          ['Circuit Breaker', 'Resilience4j', 'Fail Fast', 'Fallback']),
+
+        ...(hasKafka ? [mkCase('REL-003', 'Event Streaming — Message Delivery Guarantees', 'high', 'Kafka Testcontainers + Custom', 'Automated',
+          'Validate at-least-once / exactly-once delivery guarantees and consumer group behavior.',
+          ['Test producer idempotency: duplicate messages produce single effect', 'Simulate broker failure during message production — test retry behavior', 'Test consumer rebalancing when consumer instances crash', 'Validate dead letter queue (DLQ) routing for poison messages', 'Test partition leader failover — messages not lost', 'Validate offset commit strategy under consumer crash'],
+          ['Exactly-once semantics confirmed under failure scenarios', 'Dead letter queue captures malformed messages within 1 retry cycle', 'Consumer group rebalances within 30 seconds', 'Zero message loss during broker failover'],
+          featureDesc, 'reliability',
+          ['Kafka', 'Exactly-Once', 'DLQ', 'Consumer Rebalancing', 'Idempotency'])] : []),
+
+        mkCase('REL-004', 'Self-Healing Verification — Auto-Recovery Validation', 'high', 'K8s + Prometheus Alerts', 'Automated',
+          'Verify that the system detects failures and automatically recovers without human intervention.',
+          ['Kill a pod — verify Kubernetes restarts within liveness probe timeout', 'Exhaust CPU/memory limits — verify pod eviction and rescheduling', 'Force OOMKilled — verify pod replaced and traffic rerouted', 'Simulate failed health check — verify load balancer drains traffic', 'Test readiness probe prevents traffic to warming-up instances', 'Verify alerts fire within SLO breach window'],
+          ['Pod restart time < 30 seconds (liveness probe timeout + restart delay)', 'Traffic rerouted before pod is fully terminated', 'Readiness probe blocks premature traffic', 'Prometheus alert fires within 2 minutes of SLO breach'],
+          featureDesc, 'reliability',
+          hasDocker ? ['Kubernetes', 'Liveness Probe', 'Readiness Probe', 'Auto-restart', 'SLO Alerting'] : ['Self-Healing', 'Auto-Recovery', 'Health Checks']),
+
+        mkCase('REL-005', 'Distributed Tracing — Observability Under Failure', 'medium', 'Jaeger / OpenTelemetry', 'Automated',
+          'Verify that distributed traces are complete, accurate, and actionable during failure scenarios.',
+          ['Trigger a multi-service transaction and verify full trace captured in Jaeger', 'Introduce a failure mid-chain — verify trace shows exact failure point', 'Verify span context propagated correctly across async message boundaries', 'Test sampling rate maintains performance SLA at high trace volume', 'Validate trace correlation IDs present in all error logs'],
+          ['Full distributed trace captured for every cross-service call', 'Failed spans correctly marked with error status and attributes', 'Trace context propagated across ' + (hasKafka ? 'Kafka message headers' : 'async boundaries'), 'Correlation ID present in 100% of error log events'],
+          featureDesc, 'reliability',
+          distrib ? ['OpenTelemetry', 'Jaeger', 'Distributed Tracing', 'Span Context', 'Correlation IDs'] : ['Tracing', 'Observability'])
+      ]
+    };
+  }
+
+  // ─────────── BUSINESS LOGIC ───────────
+  if (scopes.includes('business')) {
+    categories.business = {
+      meta: CATEGORY_META.business,
+      cases: [
+        mkCase('BIZ-001', 'Domain Invariant Enforcement — Core Business Rules', 'critical', 'JUnit 5 / pytest', 'Automated',
+          'Verify all core domain invariants are enforced and cannot be violated through any API path.',
+          ['Test each documented business rule in isolation (unit level)', 'Combine rules to find conflict scenarios', 'Test rule enforcement via direct API calls (bypassing UI validation)', 'Verify rule violations produce correct domain exception types', 'Test rule enforcement under concurrent modification scenarios'],
+          ['Every documented invariant enforced at domain model layer', 'Rule violations throw typed domain exceptions (not generic errors)', 'Concurrent violations handled with optimistic locking or saga compensation'],
+          featureDesc, 'business',
+          ['Domain Invariants', 'Domain Events', 'Business Rules Engine']),
+
+        mkCase('BIZ-002', 'Edge Case Enumeration — Boundary Value Analysis', 'high', 'Property-Based Testing (fast-check/Hypothesis)', 'Automated',
+          'Systematically discover edge cases using boundary value analysis and equivalence partitioning.',
+          ['Test numeric boundaries for all monetary/quantity fields', 'Test date/time edge cases: DST transitions, leap years, end-of-month', 'Test empty vs null vs whitespace-only string fields', 'Test maximum collection sizes and pagination boundaries', 'Property-based test: generate 1000 random valid inputs and verify invariants hold', 'Test concurrent update edge cases: same resource updated simultaneously'],
+          ['All boundary values handled without exception', 'Property-based tests pass across 1000+ generated inputs', 'DST/timezone transitions produce correct results', 'Concurrent updates produce consistent final state'],
+          featureDesc, 'business',
+          ['Boundary Value Analysis', 'Property-Based Testing', 'Equivalence Partitioning']),
+
+        ...(isPayment ? [mkCase('BIZ-003', 'Financial Accuracy — Monetary Calculation Precision', 'critical', 'Custom decimal assertion library', 'Automated',
+          'Verify all monetary calculations are precise, handle currency correctly, and avoid floating-point errors.',
+          ['Verify all amounts use fixed-point arithmetic (no float/double for money)', 'Test multi-currency conversion with rounding rules (half-up, banker\'s rounding)', 'Test split payment scenarios sum to exact total', 'Test refund calculations for partial refunds across tax jurisdictions', 'Test discount stacking rules and order of application', 'Verify totals are consistent across all aggregate views'],
+          ['All monetary calculations use BigDecimal/Money type (no float)', 'Rounding produces legally correct results per jurisdiction', 'Split payment components sum to order total exactly', 'Refund amounts never exceed original payment amount'],
+          featureDesc, 'business',
+          ['Monetary Precision', 'Currency', 'Rounding Rules', 'PCI-DSS Financial'])] : []),
+
+        mkCase('BIZ-004', 'Saga / Distributed Transaction — Compensation Flows', 'critical', 'Integration Test + Chaos', 'Automated',
+          'Verify that multi-step distributed transactions correctly compensate on partial failure.',
+          ['Trigger a saga — inject failure at each step sequentially', 'Verify compensation transactions execute in reverse order', 'Verify all compensated resources return to original state', 'Test idempotency of compensation: apply twice, expect same result', 'Test saga timeout: verify orchestrator handles non-responding participants', 'Verify saga state persisted durably (survives orchestrator restart)'],
+          ['Compensation rolls back all steps completed before failure', 'Compensation is idempotent (safe to retry)', 'Saga state recoverable after orchestrator crash', 'No partial committed states in DB after failed saga'],
+          featureDesc, 'business',
+          isMicro ? ['Saga Pattern', 'Choreography', 'Orchestration', 'Compensation', 'Distributed Transactions'] : ['Transaction Rollback', 'Compensation']),
+
+        mkCase('BIZ-005', 'Complex Workflow Integrity — Multi-Actor Scenarios', 'high', 'Cucumber / BDD Framework', 'Automated',
+          'Use behavior-driven scenarios to validate complex multi-actor workflows match business specifications.',
+          ['Write Given-When-Then scenarios from business requirements', 'Test concurrent actor scenarios (customer + operator + system acting simultaneously)', 'Verify notification events fired at correct workflow milestones', 'Test approval workflows with multiple approvers and quorum rules', 'Test workflow resumption after long-running pause (days/weeks)'],
+          ['All BDD scenarios pass and match business acceptance criteria', 'Concurrent actor scenarios produce consistent, correct results', 'Notification events fired exactly once per milestone', 'Workflow state preserved correctly across pause/resume cycle'],
+          featureDesc, 'business',
+          ['BDD', 'Cucumber', 'Multi-Actor', 'Workflow Integrity'])
+      ]
+    };
+  }
+
+  const allCases = Object.values(categories).flatMap(c => c.cases);
+
+  return {
+    appName, archType, techStack, featureDesc,
+    coverage, depth: depthLabel,
+    microPat, distrib, compliance,
+    categories,
+    totalCases: allCases.length,
+    scopes,
+    generatedAt: new Date().toISOString()
+  };
+}
+
+function mkCase(id, title, priority, tool, automation, description, steps, assertions, featureDesc, category, msTags) {
+  const confidence = scoreConfidence(title + ' ' + description, category, featureDesc);
+  return { id, title, priority, tool, automation, description, steps, assertions, confidence, msTags: msTags || [] };
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDER LAYER
+// ═══════════════════════════════════════════════════════
+
+function renderOutput(data) {
+  renderTabs(data);
+  renderPanes(data);
+}
+
+function renderTabs(data) {
+  const bar = document.getElementById('tabsBar');
+  bar.innerHTML = '';
+
+  // Overview tab
+  const overviewTab = document.createElement('button');
+  overviewTab.className = 'tab-btn active';
+  overviewTab.dataset.tab = 'overview';
+  overviewTab.style.setProperty('--tab-color', CATEGORY_META.overview.color);
+  overviewTab.innerHTML = `<span class="tab-dot"></span> ${CATEGORY_META.overview.icon} Overview`;
+  overviewTab.addEventListener('click', () => switchTab('overview'));
+  bar.appendChild(overviewTab);
+
+  data.scopes.forEach(scope => {
+    const meta = CATEGORY_META[scope];
+    const count = data.categories[scope]?.cases.length || 0;
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn';
+    btn.dataset.tab = scope;
+    btn.style.setProperty('--tab-color', meta.color);
+    btn.innerHTML = `<span class="tab-dot" style="background:${meta.color}"></span> ${meta.icon} ${meta.label} <span class="tab-count">${count}</span>`;
+    btn.addEventListener('click', () => switchTab(scope));
+    bar.appendChild(btn);
+  });
+}
+
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tabId);
+  });
+  document.querySelectorAll('.tab-pane').forEach(p => {
+    p.classList.toggle('active', p.dataset.pane === tabId);
+  });
+}
+
+function renderPanes(data) {
+  const container = document.getElementById('tabPanes');
+  container.innerHTML = '';
+
+  // ── Overview pane ──
+  const overview = document.createElement('div');
+  overview.className = 'tab-pane active';
+  overview.dataset.pane = 'overview';
+  overview.innerHTML = renderOverview(data);
+  container.appendChild(overview);
+
+  // ── Category panes ──
+  data.scopes.forEach(scope => {
+    const cat = data.categories[scope];
+    if (!cat) return;
+    const pane = document.createElement('div');
+    pane.className = 'tab-pane';
+    pane.dataset.pane = scope;
+    pane.innerHTML = renderCategory(cat);
+    container.appendChild(pane);
+  });
+
+  // Animate confidence bars after DOM insertion
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.confidence-fill[data-width]').forEach(el => {
+      el.style.width = el.dataset.width + '%';
+    });
+    document.querySelectorAll('.mini-bar-fill[data-width]').forEach(el => {
+      el.style.width = el.dataset.width + '%';
+    });
+  });
+}
+
+function renderOverview(data) {
+  const totalCases = data.totalCases;
+  const avgConf = Math.round(
+    Object.values(data.categories).flatMap(c => c.cases).reduce((s, c) => s + c.confidence, 0) / totalCases
+  );
+  const criticalCount = Object.values(data.categories).flatMap(c => c.cases).filter(c => c.priority === 'critical').length;
+  const automatedCount = Object.values(data.categories).flatMap(c => c.cases).filter(c => c.automation.includes('Automated')).length;
+
+  const archLabels = {
+    microservices: 'Microservices (K8s + Service Mesh)',
+    monolith: 'Modular Monolith',
+    serverless: 'Serverless / Event-Driven',
+    hybrid: 'Hybrid Architecture',
+    'event-sourced': 'Event Sourced + CQRS'
+  };
+
+  let html = `
+    <div class="summary-grid">
+      <div class="stat-card" style="--card-color:#e6edf3">
+        <div class="num" style="color:#e6edf3">${totalCases}</div>
+        <div class="lbl">Total Test Cases</div>
+      </div>
+      <div class="stat-card" style="--card-color:${CATEGORY_META.functional.color}">
+        <div class="num" style="color:${CATEGORY_META.functional.color}">${data.scopes.length}</div>
+        <div class="lbl">Categories</div>
+      </div>
+      <div class="stat-card" style="--card-color:#ffa657">
+        <div class="num" style="color:#ffa657">${criticalCount}</div>
+        <div class="lbl">Critical Priority</div>
+      </div>
+      <div class="stat-card" style="--card-color:#58a6ff">
+        <div class="num" style="color:#58a6ff">${automatedCount}</div>
+        <div class="lbl">Auto-testable</div>
+      </div>
+      <div class="stat-card" style="--card-color:#d2a8ff">
+        <div class="num" style="color:#d2a8ff">${avgConf}%</div>
+        <div class="lbl">Avg Confidence</div>
+      </div>
+      <div class="stat-card" style="--card-color:#3fb950">
+        <div class="num" style="color:#3fb950">${data.coverage}%</div>
+        <div class="lbl">Target Coverage</div>
+      </div>
+    </div>
+
+    <div class="section-heading">Application Profile</div>
+    <div class="test-card" style="--card-accent: #8b949e">
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; font-size:0.82rem;">
+        <div><span style="color:var(--text3); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:3px;">Application</span><strong>${escHtml(data.appName)}</strong></div>
+        <div><span style="color:var(--text3); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:3px;">Architecture</span><strong>${archLabels[data.archType] || data.archType}</strong></div>
+        <div><span style="color:var(--text3); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:3px;">Stack</span><strong>${escHtml(data.techStack || '—')}</strong></div>
+        <div><span style="color:var(--text3); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:3px;">Depth</span><strong>${data.depth}</strong></div>
+      </div>
+    </div>
+
+    <div class="section-heading">Coverage Matrix</div>
+    <table class="coverage-matrix">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Cases</th>
+          <th>Avg Confidence</th>
+          <th>Coverage</th>
+          <th>Priority Mix</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  data.scopes.forEach(scope => {
+    const cat = data.categories[scope];
+    if (!cat) return;
+    const cases = cat.cases;
+    const avg = Math.round(cases.reduce((s, c) => s + c.confidence, 0) / cases.length);
+    const crit = cases.filter(c => c.priority === 'critical').length;
+    const high = cases.filter(c => c.priority === 'high').length;
+    const meta = CATEGORY_META[scope];
+    const barColor = meta.color;
+
+    html += `
+      <tr>
+        <td><span style="display:inline-flex;align-items:center;gap:6px;font-weight:600;">${meta.icon} ${meta.label}</span></td>
+        <td style="font-weight:700; color:${barColor}">${cases.length}</td>
+        <td>
+          <div class="mini-bar">
+            <div class="mini-bar-track"><div class="mini-bar-fill" style="background:${barColor}; width:0" data-width="${avg}"></div></div>
+            <span style="font-size:0.78rem; font-weight:700; color:${barColor}; min-width:36px;">${avg}%</span>
+          </div>
+        </td>
+        <td>
+          <div class="mini-bar">
+            <div class="mini-bar-track"><div class="mini-bar-fill" style="background:${barColor}; width:0" data-width="${data.coverage}"></div></div>
+            <span style="font-size:0.78rem; color:var(--text2); min-width:36px;">${data.coverage}%</span>
+          </div>
+        </td>
+        <td style="font-size:0.75rem; color:var(--text2);">
+          ${crit > 0 ? `<span style="color:#ff7b72">●</span> ${crit} Critical  ` : ''}
+          ${high > 0 ? `<span style="color:#ffa657">●</span> ${high} High` : ''}
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table>`;
+
+  // Microservice Architecture Notes
+  if (data.microPat || data.distrib) {
+    html += `
+      <div class="section-heading" style="margin-top:20px;">Enterprise Architecture Patterns</div>
+      <div class="arch-grid">
+        ${data.microPat ? `
+        <div class="arch-card"><div class="arch-icon">🔗</div><div class="arch-title">Contract Testing</div><div class="arch-desc">Consumer-driven contracts via Pact Broker ensure service compatibility without full integration environment.</div></div>
+        <div class="arch-card"><div class="arch-icon">🕸️</div><div class="arch-title">Service Mesh Testing</div><div class="arch-desc">Istio/Envoy sidecar proxy injection enables mTLS, traffic shaping, and fault injection at the mesh layer.</div></div>
+        <div class="arch-card"><div class="arch-icon">🚪</div><div class="arch-title">API Gateway Validation</div><div class="arch-desc">Test routing rules, rate limits, auth filters, and transformation logic at the gateway edge.</div></div>
+        ` : ''}
+        ${data.distrib ? `
+        <div class="arch-card"><div class="arch-icon">🔍</div><div class="arch-title">Distributed Tracing</div><div class="arch-desc">OpenTelemetry spans validate request propagation and latency attribution across all service boundaries.</div></div>
+        <div class="arch-card"><div class="arch-icon">⚡</div><div class="arch-title">Network Partitions</div><div class="arch-desc">Toxiproxy/Chaos Mesh simulate real network failures to validate CAP theorem trade-off decisions.</div></div>
+        ` : ''}
+        ${data.compliance ? `
+        <div class="arch-card"><div class="arch-icon">⚖️</div><div class="arch-title">Compliance Mapping</div><div class="arch-desc">Test cases mapped to GDPR data residency, PCI-DSS cardholder data controls, and SOC 2 Type II evidence.</div></div>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  return html;
+}
+
+function renderCategory(cat) {
+  const { meta, cases } = cat;
+  let html = `
+    <div style="background:${meta.color}18; border:1px solid ${meta.color}30; border-radius:var(--radius); padding:12px 16px; margin-bottom:16px; font-size:0.82rem; color:var(--text2);">
+      <strong style="color:${meta.color}">${meta.icon} ${meta.label}</strong> — ${meta.description}
+    </div>
+  `;
+  cases.forEach(c => {
+    html += renderTestCard(c, meta.color);
+  });
+  return html;
+}
+
+function renderTestCard(c, accentColor) {
+  const priorityClass = `chip-priority-${c.priority}`;
+  const confColor = c.confidence >= 85 ? '#3fb950' : c.confidence >= 70 ? '#e3b341' : '#ff7b72';
+
+  return `
+    <div class="test-card" style="--card-accent: ${accentColor}">
+      <div class="test-card-header">
+        <span class="test-id">${escHtml(c.id)}</span>
+        <span class="test-title">${escHtml(c.title)}</span>
+      </div>
+      <div class="test-meta">
+        <span class="chip ${priorityClass}">${c.priority.toUpperCase()}</span>
+        <span class="chip chip-automation">${escHtml(c.automation)}</span>
+        <span class="chip chip-tool">🔧 ${escHtml(c.tool)}</span>
+      </div>
+      <div class="test-body">
+        ${escHtml(c.description)}
+      </div>
+
+      <div class="test-steps">
+        <strong style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text3);">Test Steps</strong>
+        <ol>
+          ${c.steps.map(s => `<li>${escHtml(s)}</li>`).join('')}
+        </ol>
+      </div>
+
+      <div class="test-assertions">
+        <div class="assert-label">Pass Criteria</div>
+        ${c.assertions.map(a => `
+          <div class="assert-item">
+            <span class="assert-check">✓</span>
+            <span>${escHtml(a)}</span>
+          </div>
+        `).join('')}
+      </div>
+
+      ${c.msTags && c.msTags.length > 0 ? `
+      <div class="ms-tags">
+        ${c.msTags.map(t => `<span class="ms-tag">${escHtml(t)}</span>`).join('')}
+      </div>
+      ` : ''}
+
+      <div class="confidence-row">
+        <span class="confidence-label" data-tip="How well this test maps to its category based on keyword analysis">Confidence</span>
+        <div class="confidence-bar">
+          <div class="confidence-fill" style="width:0; --fill-start:${confColor}; --fill-end:${confColor}cc" data-width="${c.confidence}"></div>
+        </div>
+        <span class="confidence-pct" style="color:${confColor}">${c.confidence}%</span>
+      </div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════
+//  EXPORT FUNCTIONS
+// ═══════════════════════════════════════════════════════
+
+function exportJSON() {
+  if (!generatedData) return;
+  const blob = new Blob([JSON.stringify(generatedData, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `testing-strategy-${generatedData.appName.replace(/\s+/g,'-').toLowerCase()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('JSON exported successfully.', '📥');
+}
+
+function exportMarkdown() {
+  if (!generatedData) return;
+  const d = generatedData;
+  let md = `# Testing Strategy — ${d.appName}\n\n`;
+  md += `**Architecture:** ${d.archType}  \n**Stack:** ${d.techStack}  \n**Generated:** ${new Date(d.generatedAt).toLocaleString()}  \n**Total Cases:** ${d.totalCases}  \n\n`;
+
+  d.scopes.forEach(scope => {
+    const cat = d.categories[scope];
+    if (!cat) return;
+    md += `---\n\n## ${cat.meta.icon} ${cat.meta.label}\n\n> ${cat.meta.description}\n\n`;
+    cat.cases.forEach(c => {
+      md += `### ${c.id} — ${c.title}\n\n`;
+      md += `- **Priority:** ${c.priority.toUpperCase()}\n- **Tool:** ${c.tool}\n- **Automation:** ${c.automation}\n- **Confidence:** ${c.confidence}%\n\n`;
+      md += `${c.description}\n\n`;
+      md += `**Steps:**\n${c.steps.map((s,i) => `${i+1}. ${s}`).join('\n')}\n\n`;
+      md += `**Pass Criteria:**\n${c.assertions.map(a => `- ✓ ${a}`).join('\n')}\n\n`;
+      if (c.msTags.length) md += `**Tags:** ${c.msTags.join(', ')}\n\n`;
+    });
+  });
+
+  const blob = new Blob([md], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `testing-strategy-${d.appName.replace(/\s+/g,'-').toLowerCase()}.md`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Markdown exported successfully.', '📄');
+}
+
+function copyAll() {
+  if (!generatedData) return;
+  const text = JSON.stringify(generatedData, null, 2);
+  navigator.clipboard.writeText(text).then(() => {
+    toast('Strategy copied to clipboard.', '📋');
+  }).catch(() => {
+    toast('Copy failed — try export instead.', '⚠️');
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  UTILITIES
+// ═══════════════════════════════════════════════════════
+
+function escHtml(str) {
+  return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let toastTimer = null;
+function toast(msg, icon = 'ℹ️') {
+  const el = document.getElementById('toast');
+  el.innerHTML = `${icon} ${escHtml(msg)}`;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+// ── Toggle scopes ──────────────────────────────────────
+document.querySelectorAll('.toggle[data-scope]').forEach(t => {
+  t.addEventListener('click', () => t.classList.toggle('active'));
+});
+
+// ── Range sliders ──────────────────────────────────────
+const coverageRange = document.getElementById('coverageRange');
+const depthRange    = document.getElementById('depthRange');
+const depthLabels   = ['Basic','Advanced','Exhaustive'];
+
+coverageRange.addEventListener('input', () => {
+  document.getElementById('coverageVal').textContent = coverageRange.value + '%';
+});
+
+depthRange.addEventListener('input', () => {
+  document.getElementById('depthVal').textContent = depthLabels[depthRange.value - 1];
+});
+</script>
+</body>
+</html>
