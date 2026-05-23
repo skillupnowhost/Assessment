@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QA Testing Portal — Enterprise</title>
+<style>
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;--surface3:#30363d;
+  --border:#30363d;--accent:#58a6ff;--green:#3fb950;--orange:#ffa657;
+  --red:#ff7b72;--purple:#d2a8ff;--blue:#79c0ff;--yellow:#e3b341;
+  --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+  --r:8px;--r2:12px;--sh:0 4px 24px rgba(0,0,0,.45);
+  --sidebar:240px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;line-height:1.6;overflow:hidden}
+
+/* SIDEBAR */
+#sidebar{width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .25s}
+.sb-logo{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-logo .icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--purple));border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sb-logo .brand{font-size:.9rem;font-weight:700;letter-spacing:-.02em}
+.sb-logo .ver{font-size:.65rem;color:var(--text3);margin-top:1px}
+nav{flex:1;overflow-y:auto;padding:8px 0}
+.nav-section{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:12px 20px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:.83rem;color:var(--text2);cursor:pointer;border-left:3px solid transparent;transition:all .15s;position:relative}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-item.active{color:var(--text);background:rgba(88,166,255,.08);border-left-color:var(--accent)}
+.nav-item .ni{font-size:1rem;width:18px;text-align:center}
+.nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:10px}
+.nav-badge.red{background:var(--red)}
+.sb-user{padding:16px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;font-size:.8rem}
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--accent));display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0}
+.sb-user .uname{font-weight:600}
+.sb-user .urole{font-size:.7rem;color:var(--text3)}
+
+/* MAIN */
+#main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{padding:14px 28px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.topbar h1{font-size:1rem;font-weight:700}
+.topbar .breadcrumb{font-size:.8rem;color:var(--text3)}
+.page-content{flex:1;overflow-y:auto;padding:24px 28px}
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.card-head{padding:14px 18px;border-bottom:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;gap:10px}
+.card-head h3{font-size:.88rem;font-weight:600;flex:1}
+.card-body{padding:18px}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:22px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:16px;border-top:3px solid var(--sc,var(--accent))}
+.stat .sn{font-size:2rem;font-weight:800;color:var(--sc,var(--accent));line-height:1}
+.stat .sl{font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-top:4px}
+.stat .sd{font-size:.72rem;color:var(--text3);margin-top:2px}
+
+/* GRID */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+@media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:.82rem}
+.tbl th{background:var(--surface2);padding:9px 14px;text-align:left;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--text2);font-weight:600;white-space:nowrap}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(255,255,255,.02)}
+.tbl td strong{color:var(--text);font-weight:600}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:12px;font-size:.7rem;font-weight:600;border:1px solid}
+.badge-crit{color:var(--red);border-color:rgba(255,123,114,.3);background:rgba(255,123,114,.1)}
+.badge-high{color:var(--orange);border-color:rgba(255,166,87,.3);background:rgba(255,166,87,.1)}
+.badge-med{color:var(--yellow);border-color:rgba(227,179,65,.3);background:rgba(227,179,65,.1)}
+.badge-low{color:var(--green);border-color:rgba(63,185,80,.3);background:rgba(63,185,80,.1)}
+.badge-pass{color:var(--green);border-color:rgba(63,185,80,.3);background:rgba(63,185,80,.1)}
+.badge-fail{color:var(--red);border-color:rgba(255,123,114,.3);background:rgba(255,123,114,.1)}
+.badge-skip{color:var(--text2);border-color:var(--border);background:var(--surface3)}
+.badge-pending{color:var(--accent);border-color:rgba(88,166,255,.3);background:rgba(88,166,255,.1)}
+.badge-running{color:var(--orange);border-color:rgba(255,166,87,.3);background:rgba(255,166,87,.1)}
+.badge-blue{color:var(--accent);border-color:rgba(88,166,255,.3);background:rgba(88,166,255,.1)}
+.badge-purple{color:var(--purple);border-color:rgba(210,168,255,.3);background:rgba(210,168,255,.1)}
+
+/* BUTTONS */
+.btn{padding:8px 16px;border-radius:var(--r);font-size:.82rem;font-weight:600;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{opacity:.88}
+.btn-secondary{background:var(--surface2);border:1px solid var(--border);color:var(--text2)}
+.btn-secondary:hover{color:var(--text);border-color:var(--accent)}
+.btn-danger{background:rgba(255,123,114,.15);border:1px solid rgba(255,123,114,.3);color:var(--red)}
+.btn-danger:hover{background:rgba(255,123,114,.25)}
+.btn-success{background:rgba(63,185,80,.15);border:1px solid rgba(63,185,80,.3);color:var(--green)}
+.btn-success:hover{background:rgba(63,185,80,.25)}
+.btn-sm{padding:5px 11px;font-size:.75rem}
+.btn-icon{padding:6px;border-radius:var(--r);background:var(--surface2);border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:all .15s;font-size:.85rem}
+.btn-icon:hover{color:var(--text);border-color:var(--accent)}
+
+/* FORMS */
+.form-row{display:grid;gap:14px;margin-bottom:14px}
+.form-row.cols2{grid-template-columns:1fr 1fr}
+.form-row.cols3{grid-template-columns:1fr 1fr 1fr}
+.field label{display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text2);margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:.84rem;padding:9px 12px;outline:none;font-family:inherit;transition:border-color .15s,box-shadow .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(88,166,255,.15)}
+.field textarea{resize:vertical;min-height:80px}
+.field select option{background:var(--surface2)}
+
+/* MODAL */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:900;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-backdrop.open{display:flex;animation:fadeIn .15s ease}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);width:min(660px,96vw);max-height:90vh;display:flex;flex-direction:column;box-shadow:var(--sh)}
+.modal-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.modal-head h3{font-size:.95rem;font-weight:700;flex:1}
+.modal-body{padding:20px;overflow-y:auto;flex:1}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:var(--surface2)}
+
+/* PROGRESS BAR */
+.pbar{background:var(--surface3);border-radius:4px;overflow:hidden;height:8px}
+.pbar-fill{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+
+/* MINI DONUT */
+.donut-wrap{display:flex;align-items:center;gap:16px}
+.donut-legend{display:grid;gap:6px;flex:1}
+.donut-leg-item{display:flex;align-items:center;gap:8px;font-size:.76rem;color:var(--text2)}
+.donut-leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+/* TIMELINE */
+.timeline{display:grid;gap:0}
+.tl-item{display:flex;gap:12px;padding-bottom:16px;position:relative}
+.tl-item::before{content:'';position:absolute;left:15px;top:28px;bottom:0;width:1px;background:var(--border)}
+.tl-item:last-child::before{display:none}
+.tl-dot{width:30px;height:30px;border-radius:50%;background:var(--surface2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;position:relative;z-index:1}
+.tl-dot.pass{border-color:var(--green);background:rgba(63,185,80,.15)}
+.tl-dot.fail{border-color:var(--red);background:rgba(255,123,114,.15)}
+.tl-dot.run{border-color:var(--orange);background:rgba(255,166,87,.15)}
+.tl-content{flex:1;padding-top:4px}
+.tl-title{font-size:.84rem;font-weight:600;color:var(--text)}
+.tl-meta{font-size:.74rem;color:var(--text3);margin-top:2px}
+
+/* TABS */
+.tabs{border-bottom:1px solid var(--border);display:flex;margin-bottom:18px;overflow-x:auto}
+.tabs::-webkit-scrollbar{display:none}
+.tab-btn{padding:10px 18px;border:none;background:transparent;color:var(--text2);font-size:.82rem;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-pane{display:none}
+.tab-pane.active{display:block;animation:fadeIn .15s ease}
+
+/* SEARCH BAR */
+.search-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.search-bar input{flex:1;min-width:200px}
+
+/* CHIP */
+.chip{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.68rem;font-weight:600;background:var(--surface3);color:var(--text2);border:1px solid var(--border)}
+
+/* CANVAS CHART */
+canvas{display:block}
+
+/* RESULT ROW */
+.result-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:.82rem}
+.result-row:last-child{border-bottom:none}
+.result-status{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0}
+.result-status.pass{background:rgba(63,185,80,.2);color:var(--green)}
+.result-status.fail{background:rgba(255,123,114,.2);color:var(--red)}
+.result-status.skip{background:var(--surface3);color:var(--text3)}
+.result-status.pending{background:rgba(88,166,255,.2);color:var(--accent)}
+.result-name{flex:1;color:var(--text);font-weight:500}
+.result-dur{color:var(--text3);font-size:.75rem;min-width:50px;text-align:right}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;right:24px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:11px 18px;font-size:.84rem;box-shadow:var(--sh);z-index:9999;transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;gap:8px}
+#toast.show{transform:translateY(0);opacity:1}
+
+/* EMPTY */
+.empty{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty .ei{font-size:2.5rem;opacity:.35;margin-bottom:12px}
+.empty p{font-size:.84rem;max-width:280px;margin:0 auto}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+
+/* RUN PANEL */
+.run-progress{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:16px}
+.run-progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:.82rem}
+.run-pct{font-size:1.4rem;font-weight:800;color:var(--accent)}
+
+/* FILTER CHIPS */
+.filter-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.fchip{padding:4px 12px;border-radius:16px;font-size:.74rem;font-weight:600;border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;transition:all .15s}
+.fchip:hover,.fchip.active{color:var(--text);border-color:var(--accent);background:rgba(88,166,255,.1)}
+
+/* STRATEGY PANE */
+.strategy-wrap{min-height:400px}
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<div id="sidebar">
+  <div class="sb-logo">
+    <div class="icon">⚡</div>
+    <div><div class="brand">QA Portal</div><div class="ver">Enterprise v3.1</div></div>
+  </div>
+  <nav>
+    <div class="nav-section">Main</div>
+    <div class="nav-item active" onclick="nav('dashboard')"><span class="ni">📊</span> Dashboard</div>
+    <div class="nav-item" onclick="nav('suites')"><span class="ni">📁</span> Test Suites <span class="nav-badge" id="nb-suites">0</span></div>
+    <div class="nav-item" onclick="nav('cases')"><span class="ni">🧪</span> Test Cases <span class="nav-badge" id="nb-cases">0</span></div>
+    <div class="nav-section">Execution</div>
+    <div class="nav-item" onclick="nav('runs')"><span class="ni">▶️</span> Test Runs <span class="nav-badge red" id="nb-runs">0</span></div>
+    <div class="nav-item" onclick="nav('results')"><span class="ni">📋</span> Results</div>
+    <div class="nav-section">Analytics</div>
+    <div class="nav-item" onclick="nav('reports')"><span class="ni">📈</span> Reports</div>
+    <div class="nav-item" onclick="nav('coverage')"><span class="ni">🗺️</span> Coverage</div>
+    <div class="nav-section">Tools</div>
+    <div class="nav-item" onclick="nav('generator')"><span class="ni">🤖</span> Strategy Generator</div>
+    <div class="nav-item" onclick="nav('settings')"><span class="ni">⚙️</span> Settings</div>
+  </nav>
+  <div class="sb-user">
+    <div class="avatar">QA</div>
+    <div><div class="uname">QA Engineer</div><div class="urole">Test Lead</div></div>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div id="main">
+  <div class="topbar">
+    <div>
+      <h1 id="page-title">Dashboard</h1>
+      <div class="breadcrumb" id="page-crumb">QA Portal › Dashboard</div>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <button class="btn btn-secondary btn-sm" onclick="nav('generator')">⚡ Strategy Generator</button>
+      <button class="btn btn-primary btn-sm" onclick="openModal('modal-new-suite')">+ New Suite</button>
+    </div>
+  </div>
+  <div class="page-content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-row" id="dash-stats"></div>
+      <div class="grid2">
+        <div class="card">
+          <div class="card-head"><span>📊</span><h3>Pass Rate Trend</h3></div>
+          <div class="card-body"><canvas id="chartTrend" height="180"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span>🍩</span><h3>Test Distribution</h3></div>
+          <div class="card-body">
+            <div class="donut-wrap">
+              <canvas id="chartDonut" width="130" height="130"></canvas>
+              <div class="donut-legend" id="donut-legend"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:16px" class="grid2">
+        <div class="card">
+          <div class="card-head"><span>🕐</span><h3>Recent Activity</h3></div>
+          <div class="card-body" id="dash-activity" style="padding:14px 18px"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span>🔥</span><h3>Failing Test Cases</h3></div>
+          <div class="card-body" id="dash-failing"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SUITES ══ -->
+    <div class="page" id="page-suites">
+      <div class="search-bar">
+        <input type="text" id="suite-search" placeholder="Search suites…" oninput="renderSuites()">
+        <button class="btn btn-primary" onclick="openModal('modal-new-suite')">+ New Suite</button>
+      </div>
+      <div id="suites-list"></div>
+    </div>
+
+    <!-- ══ CASES ══ -->
+    <div class="page" id="page-cases">
+      <div class="search-bar">
+        <input type="text" id="case-search" placeholder="Search test cases…" oninput="renderCases()">
+        <select id="case-suite-filter" onchange="renderCases()" style="width:200px">
+          <option value="">All Suites</option>
+        </select>
+        <button class="btn btn-primary" onclick="openModal('modal-new-case')">+ New Test Case</button>
+      </div>
+      <div class="filter-chips" id="case-priority-filter">
+        <div class="fchip active" data-pf="all">All</div>
+        <div class="fchip" data-pf="critical">Critical</div>
+        <div class="fchip" data-pf="high">High</div>
+        <div class="fchip" data-pf="medium">Medium</div>
+        <div class="fchip" data-pf="low">Low</div>
+      </div>
+      <div class="card">
+        <table class="tbl">
+          <thead><tr><th>ID</th><th>Title</th><th>Suite</th><th>Priority</th><th>Automation</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="cases-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ TEST RUNS ══ -->
+    <div class="page" id="page-runs">
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+        <select id="run-suite-select" style="flex:1;min-width:200px" class="field"><option value="">Select Suite to Run…</option></select>
+        <button class="btn btn-success" onclick="startRun()">▶ Start Test Run</button>
+      </div>
+      <div id="active-run-panel" style="display:none" class="card" >
+        <div class="card-head"><span>⏳</span><h3>Active Run</h3><span id="run-suite-name" style="font-size:.8rem;color:var(--text3)"></span></div>
+        <div class="card-body">
+          <div class="run-progress">
+            <div class="run-progress-header"><span>Progress</span><span class="run-pct" id="run-pct">0%</span></div>
+            <div class="pbar"><div class="pbar-fill" id="run-pbar" style="width:0;background:var(--accent)"></div></div>
+            <div style="margin-top:8px;font-size:.75rem;color:var(--text3)" id="run-status-text">Preparing…</div>
+          </div>
+          <div id="run-results-list"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="card-head"><span>📋</span><h3>Run History</h3></div>
+        <div class="card-body" style="padding:0">
+          <table class="tbl">
+            <thead><tr><th>Run ID</th><th>Suite</th><th>Started</th><th>Duration</th><th>Passed</th><th>Failed</th><th>Skipped</th><th>Result</th></tr></thead>
+            <tbody id="runs-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ RESULTS ══ -->
+    <div class="page" id="page-results">
+      <div class="search-bar">
+        <select id="results-run-filter" onchange="renderResults()" style="min-width:220px">
+          <option value="">All Runs</option>
+        </select>
+        <select id="results-status-filter" onchange="renderResults()" style="min-width:140px">
+          <option value="">All Statuses</option>
+          <option value="pass">Pass</option>
+          <option value="fail">Fail</option>
+          <option value="skip">Skip</option>
+        </select>
+      </div>
+      <div class="card">
+        <table class="tbl">
+          <thead><tr><th>Case</th><th>Suite</th><th>Run</th><th>Status</th><th>Duration</th><th>Notes</th></tr></thead>
+          <tbody id="results-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ REPORTS ══ -->
+    <div class="page" id="page-reports">
+      <div class="tabs" id="reports-tabs">
+        <button class="tab-btn active" onclick="switchInnerTab('reports','summary')">Summary</button>
+        <button class="tab-btn" onclick="switchInnerTab('reports','trend')">Trend Analysis</button>
+        <button class="tab-btn" onclick="switchInnerTab('reports','flaky')">Flaky Tests</button>
+      </div>
+      <div class="tab-pane active" id="reports-tab-summary" data-parent="reports">
+        <div class="stats-row" id="rpt-stats"></div>
+        <div class="card">
+          <div class="card-head"><span>📊</span><h3>Category Pass Rate</h3></div>
+          <div class="card-body"><canvas id="chartBar" height="220"></canvas></div>
+        </div>
+      </div>
+      <div class="tab-pane" id="reports-tab-trend" data-parent="reports">
+        <div class="card">
+          <div class="card-head"><span>📈</span><h3>Pass Rate — Last 10 Runs</h3></div>
+          <div class="card-body"><canvas id="chartTrend2" height="240"></canvas></div>
+        </div>
+      </div>
+      <div class="tab-pane" id="reports-tab-flaky" data-parent="reports">
+        <div class="card">
+          <div class="card-head"><span>🔥</span><h3>Flaky Test Candidates</h3></div>
+          <div class="card-body" id="flaky-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ COVERAGE ══ -->
+    <div class="page" id="page-coverage">
+      <div class="stats-row" id="cov-stats"></div>
+      <div class="card">
+        <div class="card-head"><span>🗺️</span><h3>Coverage by Category</h3></div>
+        <div class="card-body" id="cov-matrix"></div>
+      </div>
+    </div>
+
+    <!-- ══ GENERATOR ══ -->
+    <div class="page" id="page-generator">
+      <div class="strategy-wrap" id="strategy-embed"></div>
+    </div>
+
+    <!-- ══ SETTINGS ══ -->
+    <div class="page" id="page-settings">
+      <div class="card">
+        <div class="card-head"><span>⚙️</span><h3>Portal Settings</h3></div>
+        <div class="card-body">
+          <div class="form-row cols2">
+            <div class="field"><label>Portal Name</label><input type="text" id="set-name" value="QA Testing Portal"></div>
+            <div class="field"><label>Team Name</label><input type="text" id="set-team" value="QA Engineering"></div>
+          </div>
+          <div class="form-row cols2">
+            <div class="field"><label>Default Priority</label>
+              <select id="set-priority"><option value="medium" selected>Medium</option><option value="high">High</option><option value="critical">Critical</option><option value="low">Low</option></select>
+            </div>
+            <div class="field"><label>Run Simulation Speed</label>
+              <select id="set-speed"><option value="fast">Fast (100ms/case)</option><option value="normal" selected>Normal (300ms/case)</option><option value="slow">Slow (600ms/case)</option></select>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn btn-primary" onclick="toast('Settings saved.','✅')">Save Settings</button>
+            <button class="btn btn-danger" onclick="confirmReset()">Reset All Data</button>
+            <button class="btn btn-secondary" onclick="exportData()">Export Data JSON</button>
+            <button class="btn btn-secondary" onclick="importData()">Import Data JSON</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page-content -->
+</div><!-- /main -->
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- New Suite -->
+<div class="modal-backdrop" id="modal-new-suite">
+  <div class="modal">
+    <div class="modal-head"><h3>➕ New Test Suite</h3><button class="btn-icon" onclick="closeModal('modal-new-suite')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row"><div class="field"><label>Suite Name *</label><input type="text" id="ns-name" placeholder="e.g. Auth Service — Regression"></div></div>
+      <div class="form-row cols2">
+        <div class="field"><label>Category</label>
+          <select id="ns-cat">
+            <option value="functional">✅ Functional</option>
+            <option value="performance">⚡ Performance</option>
+            <option value="security">🔐 Security</option>
+            <option value="accessibility">♿ Accessibility</option>
+            <option value="reliability">🛡️ Reliability</option>
+            <option value="business">💼 Business Logic</option>
+          </select>
+        </div>
+        <div class="field"><label>Environment</label>
+          <select id="ns-env">
+            <option value="dev">Development</option>
+            <option value="staging" selected>Staging</option>
+            <option value="prod">Production</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row"><div class="field"><label>Description</label><textarea id="ns-desc" placeholder="What does this suite validate?"></textarea></div></div>
+      <div class="form-row cols2">
+        <div class="field"><label>Owner</label><input type="text" id="ns-owner" placeholder="Team or engineer name" value="QA Team"></div>
+        <div class="field"><label>Tags (comma separated)</label><input type="text" id="ns-tags" placeholder="smoke, regression, api"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal('modal-new-suite')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSuite()">Create Suite</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Case -->
+<div class="modal-backdrop" id="modal-new-case">
+  <div class="modal">
+    <div class="modal-head"><h3>🧪 New Test Case</h3><button class="btn-icon" onclick="closeModal('modal-new-case')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row cols2">
+        <div class="field"><label>Suite *</label>
+          <select id="nc-suite"></select>
+        </div>
+        <div class="field"><label>Priority</label>
+          <select id="nc-priority">
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium" selected>Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row"><div class="field"><label>Title *</label><input type="text" id="nc-title" placeholder="e.g. Verify order creation with valid payload"></div></div>
+      <div class="form-row cols2">
+        <div class="field"><label>Automation</label>
+          <select id="nc-auto">
+            <option value="Automated">Automated</option>
+            <option value="Manual">Manual</option>
+            <option value="Semi-automated">Semi-automated</option>
+          </select>
+        </div>
+        <div class="field"><label>Tool</label><input type="text" id="nc-tool" placeholder="e.g. Jest, Cypress, k6"></div>
+      </div>
+      <div class="form-row"><div class="field"><label>Description</label><textarea id="nc-desc" placeholder="What does this test validate?"></textarea></div></div>
+      <div class="form-row"><div class="field"><label>Steps (one per line)</label><textarea id="nc-steps" placeholder="1. Navigate to login page&#10;2. Enter credentials&#10;3. Click submit"></textarea></div></div>
+      <div class="form-row"><div class="field"><label>Expected Results (one per line)</label><textarea id="nc-expect" placeholder="User is authenticated&#10;Dashboard loads within 500ms"></textarea></div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal('modal-new-case')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCase()">Create Test Case</button>
+    </div>
+  </div>
+</div>
+
+<!-- View Case -->
+<div class="modal-backdrop" id="modal-view-case">
+  <div class="modal" style="width:min(740px,96vw)">
+    <div class="modal-head"><h3 id="vc-title">Test Case</h3><button class="btn-icon" onclick="closeModal('modal-view-case')">✕</button></div>
+    <div class="modal-body" id="vc-body"></div>
+    <div class="modal-foot">
+      <button class="btn btn-danger btn-sm" id="vc-delete-btn">Delete</button>
+      <span style="flex:1"></span>
+      <button class="btn btn-secondary" onclick="closeModal('modal-view-case')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- View Run -->
+<div class="modal-backdrop" id="modal-view-run">
+  <div class="modal" style="width:min(740px,96vw)">
+    <div class="modal-head"><h3 id="vr-title">Run Details</h3><button class="btn-icon" onclick="closeModal('modal-view-run')">✕</button></div>
+    <div class="modal-body" id="vr-body"></div>
+    <div class="modal-foot"><button class="btn btn-secondary" onclick="closeModal('modal-view-run')">Close</button></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<input type="file" id="import-input" accept=".json" style="display:none" onchange="handleImport(event)">
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+const CAT_META = {
+  functional:    {label:'Functional',    icon:'✅', color:'#3fb950'},
+  performance:   {label:'Performance',   icon:'⚡', color:'#ffa657'},
+  security:      {label:'Security',      icon:'🔐', color:'#ff7b72'},
+  accessibility: {label:'Accessibility', icon:'♿', color:'#d2a8ff'},
+  reliability:   {label:'Reliability',   icon:'🛡️', color:'#58a6ff'},
+  business:      {label:'Business Logic',icon:'💼', color:'#79c0ff'},
+};
+
+let DB = load();
+
+function load() {
+  try { return JSON.parse(localStorage.getItem('qa-portal-db')) || defaultDB(); }
+  catch { return defaultDB(); }
+}
+
+function save() { localStorage.setItem('qa-portal-db', JSON.stringify(DB)); updateBadges(); }
+
+function defaultDB() {
+  const suites = [
+    mk('suite', {name:'Auth Service — Regression', category:'functional', env:'staging', owner:'Backend Team', tags:'regression,auth,api', desc:'Full regression suite for authentication and authorization flows.'}),
+    mk('suite', {name:'Order API — Performance',   category:'performance', env:'staging', owner:'Perf Team',    tags:'load,sla,k6',         desc:'Load and stress tests for the Order Management API.'}),
+    mk('suite', {name:'Payment — Security Audit',  category:'security',   env:'staging', owner:'SecOps',        tags:'pci,owasp,pentest',   desc:'PCI-DSS and OWASP Top 10 security validation.'}),
+    mk('suite', {name:'UI — Accessibility',        category:'accessibility',env:'dev',   owner:'Frontend Team', tags:'wcag,a11y,aria',      desc:'WCAG 2.2 AA compliance for all UI components.'}),
+    mk('suite', {name:'Checkout — Business Logic', category:'business',   env:'staging', owner:'QA Team',       tags:'domain,saga,biz',     desc:'Business rule validation and saga compensation flows.'}),
+  ];
+
+  const cases = [];
+  const sampleCases = [
+    {suite:0, title:'Happy path login with valid credentials',         priority:'critical', auto:'Automated',      tool:'Cypress',     desc:'Verify user can log in with valid email/password.', steps:'Open login page\nEnter valid credentials\nClick sign in\nVerify redirect to dashboard', expect:'Dashboard loads\nJWT token set\nSession active'},
+    {suite:0, title:'Login rejected with invalid password',            priority:'high',     auto:'Automated',      tool:'Cypress',     desc:'Verify incorrect password returns 401.', steps:'Open login page\nEnter wrong password\nClick sign in', expect:'Error message displayed\nHTTP 401 returned\nNo token issued'},
+    {suite:0, title:'JWT token expiry forces re-authentication',       priority:'high',     auto:'Automated',      tool:'Supertest',   desc:'Expired JWT must be rejected.', steps:'Use expired JWT in Authorization header\nSend API request', expect:'HTTP 401 Unauthorized\nError body: token_expired'},
+    {suite:0, title:'RBAC — Admin cannot access super-admin endpoint', priority:'critical', auto:'Automated',      tool:'Postman',     desc:'Privilege escalation prevention.', steps:'Authenticate as Admin\nAccess /admin/super endpoint', expect:'HTTP 403 Forbidden\nNo data returned'},
+    {suite:1, title:'Baseline load — 500 RPS for 30 minutes',         priority:'critical', auto:'Automated',      tool:'k6',          desc:'Validate p95 latency < 200ms at target load.', steps:'Ramp up to 500 RPS\nSustain 30 minutes\nRecord metrics', expect:'p95 < 200ms\nError rate < 0.1%\nNo OOM errors'},
+    {suite:1, title:'Spike test — 5× burst traffic',                  priority:'high',     auto:'Automated',      tool:'k6',          desc:'Sudden 5x traffic spike validation.', steps:'Inject spike to 2500 RPS\nMonitor queue depth', expect:'No 5xx errors\nCircuit breaker activates\nRecovery < 60s'},
+    {suite:1, title:'DB connection pool exhaustion simulation',        priority:'medium',   auto:'Automated',      tool:'k6+pgBench',  desc:'Validate behavior when DB pool is saturated.', steps:'Exhaust connection pool\nObserve application behavior', expect:'Graceful queuing\nTimeout returned within SLA'},
+    {suite:2, title:'OWASP ZAP active scan — all endpoints',          priority:'critical', auto:'Automated',      tool:'OWASP ZAP',   desc:'Full OWASP Top 10 automated scan.', steps:'Configure ZAP spider\nRun active scan\nReview findings', expect:'Zero critical findings\nZero high findings unmitigated'},
+    {suite:2, title:'SQL injection via order filter parameter',        priority:'critical', auto:'Automated',      tool:'Burp Suite',  desc:'Parameterized queries prevent SQLi.', steps:'Inject SQLi payloads in filter\nObserve response', expect:'All inputs sanitized\nHTTP 400 returned\nNo DB error leaked'},
+    {suite:3, title:'Axe-core scan — all page templates',             priority:'high',     auto:'Automated',      tool:'axe-core',    desc:'WCAG 2.2 AA automated compliance.', steps:'Run axe on all page templates\nRecord violations', expect:'Zero critical violations\nLighthouse score >= 90'},
+    {suite:3, title:'Keyboard-only navigation — checkout flow',       priority:'high',     auto:'Manual',         tool:'Manual',      desc:'Full checkout via keyboard only.', steps:'Tab through all fields\nComplete checkout\nNo mouse used', expect:'All controls reachable\nFocus visible at all times'},
+    {suite:4, title:'Order saga — payment failure compensation',      priority:'critical', auto:'Automated',      tool:'JUnit 5',     desc:'Verify saga rolls back on payment failure.', steps:'Initiate order saga\nInject payment failure\nObserve compensation', expect:'Inventory released\nOrder cancelled\nCustomer notified'},
+    {suite:4, title:'Concurrent order updates — optimistic locking',  priority:'high',     auto:'Automated',      tool:'JUnit 5',     desc:'Two concurrent edits produce consistent result.', steps:'Send two concurrent PATCH requests\nObserve final state', expect:'One succeeds\nOne returns 409 conflict\nNo data corruption'},
+  ];
+
+  sampleCases.forEach((sc) => {
+    cases.push(mk('case', {
+      suiteId: suites[sc.suite].id,
+      title: sc.title, priority: sc.priority,
+      automation: sc.auto, tool: sc.tool,
+      desc: sc.desc, status: 'pending',
+      steps: sc.steps.split('\n'),
+      expect: sc.expect.split('\n'),
+    }));
+  });
+
+  // seed two completed runs
+  const runs = [];
+  const r1cases = cases.filter(c => c.suiteId === suites[0].id);
+  const run1 = mk('run', { suiteId: suites[0].id, completedAt: new Date(Date.now()-86400000*2).toISOString() });
+  run1.results = r1cases.map(c => ({
+    caseId: c.id, caseTitle: c.title,
+    status: Math.random()>.25?'pass':'fail',
+    duration: Math.floor(Math.random()*800+100)
+  }));
+  const r2cases = cases.filter(c => c.suiteId === suites[1].id);
+  const run2 = mk('run', { suiteId: suites[1].id, completedAt: new Date(Date.now()-86400000).toISOString() });
+  run2.results = r2cases.map(c => ({
+    caseId: c.id, caseTitle: c.title,
+    status: Math.random()>.35?'pass':'fail',
+    duration: Math.floor(Math.random()*3000+500)
+  }));
+  runs.push(run1, run2);
+
+  return { suites, cases, runs };
+}
+
+let _idSeq = Date.now();
+function uid(prefix){ return prefix + '-' + (++_idSeq).toString(36); }
+function mk(type, props) {
+  const base = { id: uid(type), createdAt: new Date().toISOString() };
+  if (type === 'run') base.startedAt = new Date().toISOString();
+  return Object.assign(base, props);
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════
+const PAGE_META = {
+  dashboard: {title:'Dashboard', crumb:'QA Portal › Dashboard'},
+  suites:    {title:'Test Suites', crumb:'QA Portal › Test Suites'},
+  cases:     {title:'Test Cases',  crumb:'QA Portal › Test Cases'},
+  runs:      {title:'Test Runs',   crumb:'QA Portal › Execution › Test Runs'},
+  results:   {title:'Results',     crumb:'QA Portal › Execution › Results'},
+  reports:   {title:'Reports',     crumb:'QA Portal › Analytics › Reports'},
+  coverage:  {title:'Coverage',    crumb:'QA Portal › Analytics › Coverage'},
+  generator: {title:'Strategy Generator', crumb:'QA Portal › Tools › Strategy Generator'},
+  settings:  {title:'Settings',    crumb:'QA Portal › Settings'},
+};
+
+let currentPage = 'dashboard';
+
+function nav(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') === `nav('${page}')`) n.classList.add('active');
+  });
+  const m = PAGE_META[page] || { title: page, crumb: 'QA Portal' };
+  document.getElementById('page-title').textContent = m.title;
+  document.getElementById('page-crumb').textContent = m.crumb;
+  currentPage = page;
+
+  const renders = {
+    dashboard: renderDashboard, suites: renderSuites, cases: renderCases,
+    runs: renderRuns, results: renderResults, reports: renderReports,
+    coverage: renderCoverage, settings: ()=>{}, generator: renderGenerator
+  };
+  if (renders[page]) renders[page]();
+}
+
+function updateBadges() {
+  document.getElementById('nb-suites').textContent = DB.suites.length;
+  document.getElementById('nb-cases').textContent  = DB.cases.length;
+  document.getElementById('nb-runs').textContent   = DB.runs.filter(r => !r.completedAt).length || DB.runs.length;
+}
+
+// ═══════════════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════════════
+function renderDashboard() {
+  const allResults = DB.runs.flatMap(r => r.results || []);
+  const pass = allResults.filter(r => r.status === 'pass').length;
+  const fail = allResults.filter(r => r.status === 'fail').length;
+  const skip = allResults.filter(r => r.status === 'skip').length;
+  const pct  = allResults.length ? Math.round(pass / allResults.length * 100) : 0;
+
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat" style="--sc:#3fb950"><div class="sn">${DB.cases.length}</div><div class="sl">Test Cases</div><div class="sd">${DB.suites.length} suites</div></div>
+    <div class="stat" style="--sc:#58a6ff"><div class="sn">${DB.runs.length}</div><div class="sl">Total Runs</div><div class="sd">All time</div></div>
+    <div class="stat" style="--sc:#3fb950"><div class="sn">${pct}%</div><div class="sl">Pass Rate</div><div class="sd">${pass} passed</div></div>
+    <div class="stat" style="--sc:#ff7b72"><div class="sn">${fail}</div><div class="sl">Failures</div><div class="sd">Across all runs</div></div>
+    <div class="stat" style="--sc:#ffa657"><div class="sn">${DB.cases.filter(c=>c.automation==='Automated').length}</div><div class="sl">Automated</div><div class="sd">${DB.cases.filter(c=>c.automation==='Manual').length} manual</div></div>
+    <div class="stat" style="--sc:#d2a8ff"><div class="sn">${skip}</div><div class="sl">Skipped</div><div class="sd">In history</div></div>
+  `;
+
+  // Activity
+  const acts = DB.runs.slice(-5).reverse().map(r => {
+    const suite = DB.suites.find(s => s.id === r.suiteId);
+    const res = r.results || [];
+    const p = res.filter(x=>x.status==='pass').length;
+    const isPass = p === res.length && res.length > 0;
+    const state = r.completedAt ? (isPass ? 'pass' : 'fail') : 'run';
+    const icon  = {pass:'✅',fail:'❌',run:'⏳'}[state];
+    return `<div class="tl-item">
+      <div class="tl-dot ${state}">${icon}</div>
+      <div class="tl-content">
+        <div class="tl-title">${esc(suite?.name||'Unknown Suite')}</div>
+        <div class="tl-meta">${r.completedAt ? fmt(r.completedAt) : 'In progress'} · ${res.length} cases · ${p}/${res.length} passed</div>
+      </div>
+    </div>`;
+  }).join('') || '<div class="empty"><div class="ei">🕐</div><p>No runs yet</p></div>';
+  document.getElementById('dash-activity').innerHTML = `<div class="timeline">${acts}</div>`;
+
+  // Failing
+  const failing = allResults.filter(r=>r.status==='fail').slice(0,6);
+  document.getElementById('dash-failing').innerHTML = failing.length
+    ? failing.map(r=>`<div class="result-row"><div class="result-status fail">✕</div><div class="result-name">${esc(r.caseTitle||r.caseId)}</div><span class="badge badge-fail">FAIL</span></div>`).join('')
+    : '<div class="empty"><div class="ei">🎉</div><p>No failing tests!</p></div>';
+
+  setTimeout(()=>{ drawTrend('chartTrend'); drawDonut(); }, 50);
+}
+
+function drawTrend(id) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth || 400;
+  const data = DB.runs.slice(-10).map(r => {
+    const res = r.results || [];
+    return res.length ? Math.round(res.filter(x=>x.status==='pass').length/res.length*100) : 0;
+  });
+  if (!data.length) data.push(0,0,0);
+  const W=canvas.width, H=canvas.height, pad=30;
+  ctx.clearRect(0,0,W,H);
+  const max=100, step=W/(data.length-1||1);
+  // grid
+  ctx.strokeStyle='rgba(48,54,61,.6)'; ctx.lineWidth=1;
+  [0,25,50,75,100].forEach(v=>{
+    const y=pad+(H-pad*2)*(1-v/max);
+    ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(W-pad,y); ctx.stroke();
+    ctx.fillStyle='rgba(110,118,129,.6)'; ctx.font='10px sans-serif'; ctx.fillText(v+'%',2,y+4);
+  });
+  // gradient fill
+  const grad = ctx.createLinearGradient(0,pad,0,H-pad);
+  grad.addColorStop(0,'rgba(88,166,255,.25)'); grad.addColorStop(1,'rgba(88,166,255,0)');
+  ctx.beginPath();
+  data.forEach((v,i)=>{ const x=pad+i*step, y=pad+(H-pad*2)*(1-v/max); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
+  ctx.lineTo(pad+(data.length-1)*step, H-pad); ctx.lineTo(pad,H-pad); ctx.closePath();
+  ctx.fillStyle=grad; ctx.fill();
+  // line
+  ctx.beginPath(); ctx.strokeStyle='#58a6ff'; ctx.lineWidth=2.5; ctx.lineJoin='round';
+  data.forEach((v,i)=>{ const x=pad+i*step, y=pad+(H-pad*2)*(1-v/max); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
+  ctx.stroke();
+  // dots
+  data.forEach((v,i)=>{
+    const x=pad+i*step, y=pad+(H-pad*2)*(1-v/max);
+    ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2);
+    ctx.fillStyle='#58a6ff'; ctx.fill();
+    ctx.strokeStyle='#0d1117'; ctx.lineWidth=2; ctx.stroke();
+  });
+}
+
+function drawDonut() {
+  const cats = Object.keys(CAT_META);
+  const counts = cats.map(c => DB.cases.filter(cs => {
+    const suite = DB.suites.find(s=>s.id===cs.suiteId);
+    return suite?.category===c;
+  }).length);
+  const total = counts.reduce((a,b)=>a+b,0)||1;
+  const canvas = document.getElementById('chartDonut');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const cx=65, cy=65, r=55, ir=35;
+  ctx.clearRect(0,0,130,130);
+  let angle = -Math.PI/2;
+  cats.forEach((c,i)=>{
+    const slice = (counts[i]/total)*Math.PI*2;
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,angle,angle+slice);
+    ctx.closePath(); ctx.fillStyle=CAT_META[c].color; ctx.fill();
+    angle+=slice;
+  });
+  ctx.beginPath(); ctx.arc(cx,cy,ir,0,Math.PI*2); ctx.fillStyle='#161b22'; ctx.fill();
+  ctx.fillStyle='#e6edf3'; ctx.font='bold 14px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(total, cx, cy-6);
+  ctx.fillStyle='#8b949e'; ctx.font='9px sans-serif'; ctx.fillText('cases', cx, cy+8);
+
+  document.getElementById('donut-legend').innerHTML = cats.map((c,i)=>`
+    <div class="donut-leg-item">
+      <div class="donut-leg-dot" style="background:${CAT_META[c].color}"></div>
+      <span>${CAT_META[c].label}</span>
+      <span style="margin-left:auto;font-weight:700;color:var(--text)">${counts[i]}</span>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  SUITES
+// ═══════════════════════════════════════════════════════
+function renderSuites() {
+  const q = (document.getElementById('suite-search')?.value||'').toLowerCase();
+  const filtered = DB.suites.filter(s => s.name.toLowerCase().includes(q) || s.category.includes(q));
+  const container = document.getElementById('suites-list');
+  if (!filtered.length) { container.innerHTML = `<div class="empty"><div class="ei">📁</div><p>No suites found</p></div>`; return; }
+  container.innerHTML = filtered.map(s => {
+    const caseCount = DB.cases.filter(c=>c.suiteId===s.id).length;
+    const runCount  = DB.runs.filter(r=>r.suiteId===s.id).length;
+    const meta = CAT_META[s.category]||{label:s.category,icon:'📁',color:'#8b949e'};
+    const lastRun = DB.runs.filter(r=>r.suiteId===s.id).slice(-1)[0];
+    const lrRes = lastRun?.results||[];
+    const lrPct = lrRes.length ? Math.round(lrRes.filter(r=>r.status==='pass').length/lrRes.length*100) : null;
+    const tags = (s.tags||'').split(',').filter(Boolean);
+    return `
+    <div class="card" style="margin-bottom:12px;border-left:3px solid ${meta.color}">
+      <div class="card-body" style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <div style="font-size:1.5rem;padding-top:2px">${meta.icon}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+            <strong style="font-size:.92rem">${esc(s.name)}</strong>
+            <span class="badge badge-blue">${meta.label}</span>
+            <span class="badge badge-skip">${esc(s.env||'staging')}</span>
+          </div>
+          <div style="font-size:.8rem;color:var(--text2);margin-bottom:8px">${esc(s.desc||'—')}</div>
+          <div style="display:flex;gap:14px;font-size:.78rem;color:var(--text3);flex-wrap:wrap">
+            <span>🧪 ${caseCount} cases</span>
+            <span>▶ ${runCount} runs</span>
+            <span>👤 ${esc(s.owner||'—')}</span>
+            <span>🗓 ${fmtDate(s.createdAt)}</span>
+          </div>
+          ${tags.length ? `<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">${tags.map(t=>`<span class="chip">${esc(t.trim())}</span>`).join('')}</div>` : ''}
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          ${lrPct!==null ? `<div style="font-size:1.4rem;font-weight:800;color:${lrPct>=80?'#3fb950':lrPct>=50?'#ffa657':'#ff7b72'}">${lrPct}%</div><div style="font-size:.68rem;color:var(--text3)">last run</div>` : '<div style="font-size:.75rem;color:var(--text3)">No runs yet</div>'}
+          <div style="display:flex;gap:6px;margin-top:8px;justify-content:flex-end">
+            <button class="btn btn-secondary btn-sm" onclick="viewSuiteCases('${s.id}')">View Cases</button>
+            <button class="btn btn-success btn-sm" onclick="quickRun('${s.id}')">▶ Run</button>
+            <button class="btn-icon btn-sm" onclick="deleteSuite('${s.id}')">🗑</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function saveSuite() {
+  const name = document.getElementById('ns-name').value.trim();
+  if (!name) { toast('Suite name is required.','⚠️'); return; }
+  DB.suites.push(mk('suite',{
+    name, category: document.getElementById('ns-cat').value,
+    env: document.getElementById('ns-env').value,
+    desc: document.getElementById('ns-desc').value.trim(),
+    owner: document.getElementById('ns-owner').value.trim(),
+    tags: document.getElementById('ns-tags').value.trim(),
+  }));
+  save(); closeModal('modal-new-suite');
+  ['ns-name','ns-desc','ns-owner','ns-tags'].forEach(id=>document.getElementById(id).value='');
+  if (currentPage==='suites') renderSuites();
+  toast(`Suite "${name}" created.`,'✅');
+}
+
+function deleteSuite(id) {
+  if (!confirm('Delete this suite and all its cases?')) return;
+  DB.suites = DB.suites.filter(s=>s.id!==id);
+  DB.cases  = DB.cases.filter(c=>c.suiteId!==id);
+  DB.runs   = DB.runs.filter(r=>r.suiteId!==id);
+  save(); renderSuites(); toast('Suite deleted.','🗑');
+}
+
+function viewSuiteCases(suiteId) {
+  document.getElementById('case-suite-filter').value = suiteId;
+  nav('cases');
+}
+
+function quickRun(suiteId) {
+  document.getElementById('run-suite-select').value = suiteId;
+  nav('runs');
+  startRun();
+}
+
+// ═══════════════════════════════════════════════════════
+//  CASES
+// ═══════════════════════════════════════════════════════
+function renderCases() {
+  // populate suite filter
+  const sf = document.getElementById('case-suite-filter');
+  const cur = sf.value;
+  sf.innerHTML = '<option value="">All Suites</option>' + DB.suites.map(s=>`<option value="${s.id}" ${s.id===cur?'selected':''}>${esc(s.name)}</option>`).join('');
+  if (cur) sf.value = cur;
+
+  // populate new-case suite select
+  const ns = document.getElementById('nc-suite');
+  ns.innerHTML = DB.suites.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('') || '<option value="">No suites yet</option>';
+
+  const q   = (document.getElementById('case-search')?.value||'').toLowerCase();
+  const sf2 = document.getElementById('case-suite-filter').value;
+  const pf  = document.querySelector('.fchip.active[data-pf]')?.dataset.pf || 'all';
+
+  let cases = DB.cases.filter(c => {
+    const suite = DB.suites.find(s=>s.id===c.suiteId);
+    const matchQ  = c.title.toLowerCase().includes(q) || (suite?.name||'').toLowerCase().includes(q);
+    const matchS  = !sf2 || c.suiteId===sf2;
+    const matchP  = pf==='all' || c.priority===pf;
+    return matchQ && matchS && matchP;
+  });
+
+  const tbody = document.getElementById('cases-tbody');
+  if (!cases.length) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text3)">No test cases match your filters</td></tr>`; return; }
+  tbody.innerHTML = cases.map((c,i)=>{
+    const suite = DB.suites.find(s=>s.id===c.suiteId);
+    const catMeta = CAT_META[suite?.category]||{color:'#8b949e'};
+    return `<tr>
+      <td><span style="font-family:monospace;font-size:.72rem;color:var(--text3)">${esc(c.id.split('-').pop().toUpperCase())}</span></td>
+      <td><strong style="cursor:pointer;color:var(--accent)" onclick="viewCase('${c.id}')">${esc(c.title)}</strong></td>
+      <td><span style="font-size:.78rem;border-left:2px solid ${catMeta.color};padding-left:6px">${esc(suite?.name||'—')}</span></td>
+      <td><span class="badge badge-${c.priority}">${c.priority.toUpperCase()}</span></td>
+      <td><span class="badge badge-${c.automation==='Automated'?'blue':c.automation==='Manual'?'skip':'purple'}">${c.automation}</span></td>
+      <td><span class="badge badge-${c.status||'pending'}">${(c.status||'pending').toUpperCase()}</span></td>
+      <td><button class="btn-icon" onclick="viewCase('${c.id}')">👁</button> <button class="btn-icon" onclick="deleteCase('${c.id}')">🗑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function saveCase() {
+  const title = document.getElementById('nc-title').value.trim();
+  const suiteId = document.getElementById('nc-suite').value;
+  if (!title) { toast('Title is required.','⚠️'); return; }
+  if (!suiteId) { toast('Select a suite.','⚠️'); return; }
+  const steps = document.getElementById('nc-steps').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const expect = document.getElementById('nc-expect').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  DB.cases.push(mk('case',{
+    suiteId, title, priority: document.getElementById('nc-priority').value,
+    automation: document.getElementById('nc-auto').value,
+    tool: document.getElementById('nc-tool').value.trim(),
+    desc: document.getElementById('nc-desc').value.trim(),
+    steps, expect, status:'pending'
+  }));
+  save(); closeModal('modal-new-case');
+  ['nc-title','nc-tool','nc-desc','nc-steps','nc-expect'].forEach(id=>document.getElementById(id).value='');
+  if (currentPage==='cases') renderCases();
+  toast(`Test case "${title}" created.`,'✅');
+}
+
+function viewCase(id) {
+  const c = DB.cases.find(x=>x.id===id);
+  if (!c) return;
+  const suite = DB.suites.find(s=>s.id===c.suiteId);
+  const meta  = CAT_META[suite?.category]||{color:'#8b949e',label:suite?.category||'—',icon:'🧪'};
+  document.getElementById('vc-title').textContent = c.title;
+  document.getElementById('vc-delete-btn').onclick = ()=>{ deleteCase(id); closeModal('modal-view-case'); };
+  document.getElementById('vc-body').innerHTML = `
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+      <span class="badge badge-${c.priority}">${c.priority.toUpperCase()}</span>
+      <span class="badge badge-${c.automation==='Automated'?'blue':'skip'}">${c.automation}</span>
+      <span class="badge badge-blue">🔧 ${esc(c.tool||'—')}</span>
+      <span class="badge badge-purple">${meta.icon} ${meta.label}</span>
+    </div>
+    <div style="font-size:.82rem;color:var(--text2);margin-bottom:16px;background:var(--surface2);padding:12px;border-radius:var(--r)">${esc(c.desc||'No description.')}</div>
+    ${c.steps?.length ? `<div style="margin-bottom:14px"><div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px">Test Steps</div><ol style="padding-left:20px;display:grid;gap:4px;font-size:.82rem;color:var(--text2)">${c.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></div>` : ''}
+    ${c.expect?.length ? `<div style="background:var(--surface2);border-radius:var(--r);padding:12px"><div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px">Expected Results</div>${c.expect.map(e=>`<div style="display:flex;gap:8px;font-size:.82rem;color:var(--text2);margin-bottom:4px"><span style="color:var(--green)">✓</span>${esc(e)}</div>`).join('')}</div>` : ''}
+    <div style="margin-top:14px;font-size:.75rem;color:var(--text3)">Created ${fmt(c.createdAt)} · Suite: ${esc(suite?.name||'—')}</div>
+  `;
+  openModal('modal-view-case');
+}
+
+function deleteCase(id) {
+  if (!confirm('Delete this test case?')) return;
+  DB.cases = DB.cases.filter(c=>c.id!==id);
+  save();
+  if (currentPage==='cases') renderCases();
+  toast('Test case deleted.','🗑');
+}
+
+// Priority filter chips
+document.querySelectorAll('.fchip[data-pf]').forEach(chip => {
+  chip.addEventListener('click', ()=>{
+    document.querySelectorAll('.fchip[data-pf]').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    renderCases();
+  });
+});
+
+// ═══════════════════════════════════════════════════════
+//  RUNS
+// ═══════════════════════════════════════════════════════
+let activeRun = null;
+
+function renderRuns() {
+  const sel = document.getElementById('run-suite-select');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Select Suite to Run…</option>' + DB.suites.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
+  if (cur) sel.value = cur;
+  renderRunHistory();
+}
+
+function renderRunHistory() {
+  const tbody = document.getElementById('runs-tbody');
+  if (!DB.runs.length) { tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text3)">No runs yet. Select a suite and start a run.</td></tr>`; return; }
+  tbody.innerHTML = DB.runs.slice().reverse().map(r => {
+    const suite = DB.suites.find(s=>s.id===r.suiteId);
+    const res = r.results||[];
+    const pass = res.filter(x=>x.status==='pass').length;
+    const fail = res.filter(x=>x.status==='fail').length;
+    const skip = res.filter(x=>x.status==='skip').length;
+    const dur  = r.completedAt ? Math.round((new Date(r.completedAt)-new Date(r.startedAt))/1000) : '—';
+    const ok   = fail===0&&res.length>0;
+    const badge= !r.completedAt ? 'badge-running' : ok ? 'badge-pass' : 'badge-fail';
+    const label= !r.completedAt ? 'RUNNING' : ok ? 'PASS' : 'FAIL';
+    return `<tr>
+      <td><span style="font-family:monospace;font-size:.72rem;color:var(--text3);cursor:pointer" onclick="viewRun('${r.id}')">${r.id.split('-').pop().toUpperCase()}</span></td>
+      <td><strong>${esc(suite?.name||'—')}</strong></td>
+      <td style="color:var(--text3);font-size:.78rem">${fmt(r.startedAt)}</td>
+      <td style="color:var(--text3);font-size:.78rem">${dur !== '—' ? dur+'s' : '—'}</td>
+      <td style="color:var(--green);font-weight:700">${pass}</td>
+      <td style="color:var(--red);font-weight:700">${fail}</td>
+      <td style="color:var(--text3)">${skip}</td>
+      <td><span class="badge ${badge}">${label}</span> <button class="btn-icon btn-sm" onclick="viewRun('${r.id}')">👁</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function startRun() {
+  const suiteId = document.getElementById('run-suite-select').value;
+  if (!suiteId) { toast('Select a suite first.','⚠️'); return; }
+  const suite = DB.suites.find(s=>s.id===suiteId);
+  const cases = DB.cases.filter(c=>c.suiteId===suiteId);
+  if (!cases.length) { toast('This suite has no test cases.','⚠️'); return; }
+
+  const run = mk('run',{ suiteId, results:[] });
+  DB.runs.push(run);
+  save();
+
+  document.getElementById('active-run-panel').style.display='block';
+  document.getElementById('run-suite-name').textContent = suite.name;
+  document.getElementById('run-results-list').innerHTML='';
+  document.getElementById('run-pct').textContent='0%';
+  document.getElementById('run-pbar').style.width='0%';
+  document.getElementById('run-status-text').textContent='Starting…';
+
+  const speed = document.getElementById('set-speed')?.value||'normal';
+  const delay = {fast:100, normal:300, slow:600}[speed];
+
+  let i=0;
+  function next() {
+    if (i >= cases.length) {
+      run.completedAt = new Date().toISOString();
+      save(); renderRunHistory();
+      document.getElementById('run-status-text').textContent='Run complete!';
+      updateBadges();
+      toast(`Run complete: ${run.results.filter(r=>r.status==='pass').length}/${cases.length} passed.`, run.results.every(r=>r.status==='pass')?'✅':'⚠️');
+      return;
+    }
+    const c = cases[i];
+    document.getElementById('run-status-text').textContent = `Running: ${c.title}`;
+    const pct = Math.round(i/cases.length*100);
+    document.getElementById('run-pct').textContent=pct+'%';
+    document.getElementById('run-pbar').style.width=pct+'%';
+
+    setTimeout(()=>{
+      const roll = Math.random();
+      const status = roll > .18 ? 'pass' : roll > .06 ? 'fail' : 'skip';
+      const duration = Math.floor(Math.random()*1500+80);
+      const result = { caseId:c.id, caseTitle:c.title, status, duration };
+      run.results.push(result);
+      c.status = status;
+
+      const list = document.getElementById('run-results-list');
+      const icon  = {pass:'✓',fail:'✕',skip:'—'}[status];
+      const row = document.createElement('div');
+      row.className = 'result-row';
+      row.innerHTML = `<div class="result-status ${status}">${icon}</div><div class="result-name">${esc(c.title)}</div><span class="badge badge-${status}">${status.toUpperCase()}</span><span class="result-dur">${duration}ms</span>`;
+      list.appendChild(row);
+      list.scrollTop = list.scrollHeight;
+
+      i++;
+      document.getElementById('run-pct').textContent=Math.round(i/cases.length*100)+'%';
+      document.getElementById('run-pbar').style.width=Math.round(i/cases.length*100)+'%';
+      next();
+    }, delay);
+  }
+  next();
+}
+
+function viewRun(id) {
+  const run = DB.runs.find(r=>r.id===id);
+  if (!run) return;
+  const suite = DB.suites.find(s=>s.id===run.suiteId);
+  const res = run.results||[];
+  const pass = res.filter(r=>r.status==='pass').length;
+  const fail = res.filter(r=>r.status==='fail').length;
+  const skip = res.filter(r=>r.status==='skip').length;
+  const pct  = res.length ? Math.round(pass/res.length*100) : 0;
+  const dur  = run.completedAt ? Math.round((new Date(run.completedAt)-new Date(run.startedAt))/1000) : null;
+  document.getElementById('vr-title').textContent = 'Run — ' + (suite?.name||'Unknown');
+  document.getElementById('vr-body').innerHTML = `
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px">
+      <div class="stat" style="--sc:${pct>=80?'#3fb950':pct>=50?'#ffa657':'#ff7b72'};flex:0;min-width:100px"><div class="sn">${pct}%</div><div class="sl">Pass Rate</div></div>
+      <div class="stat" style="--sc:#3fb950;flex:0;min-width:80px"><div class="sn">${pass}</div><div class="sl">Passed</div></div>
+      <div class="stat" style="--sc:#ff7b72;flex:0;min-width:80px"><div class="sn">${fail}</div><div class="sl">Failed</div></div>
+      <div class="stat" style="--sc:#8b949e;flex:0;min-width:80px"><div class="sn">${skip}</div><div class="sl">Skipped</div></div>
+      ${dur!==null?`<div class="stat" style="--sc:#d2a8ff;flex:0;min-width:80px"><div class="sn">${dur}s</div><div class="sl">Duration</div></div>`:''}
+    </div>
+    <div class="pbar" style="margin-bottom:16px"><div class="pbar-fill" style="width:${pct}%;background:${pct>=80?'#3fb950':pct>=50?'#ffa657':'#ff7b72'}"></div></div>
+    ${res.map(r=>`<div class="result-row"><div class="result-status ${r.status}">${{pass:'✓',fail:'✕',skip:'—',pending:'○'}[r.status]||'?'}</div><div class="result-name">${esc(r.caseTitle||r.caseId)}</div><span class="badge badge-${r.status}">${r.status.toUpperCase()}</span><span class="result-dur">${r.duration}ms</span></div>`).join('')}
+  `;
+  openModal('modal-view-run');
+}
+
+// ═══════════════════════════════════════════════════════
+//  RESULTS
+// ═══════════════════════════════════════════════════════
+function renderResults() {
+  const rfSel = document.getElementById('results-run-filter');
+  const curRun = rfSel.value;
+  rfSel.innerHTML = '<option value="">All Runs</option>' + DB.runs.map(r=>{
+    const s = DB.suites.find(x=>x.id===r.suiteId);
+    return `<option value="${r.id}" ${r.id===curRun?'selected':''}>${esc(s?.name||r.id)} — ${fmtDate(r.startedAt)}</option>`;
+  }).join('');
+  if (curRun) rfSel.value = curRun;
+
+  const runFilter    = document.getElementById('results-run-filter').value;
+  const statusFilter = document.getElementById('results-status-filter').value;
+
+  const rows = [];
+  DB.runs.forEach(run => {
+    if (runFilter && run.id !== runFilter) return;
+    const suite = DB.suites.find(s=>s.id===run.suiteId);
+    (run.results||[]).forEach(r => {
+      if (statusFilter && r.status !== statusFilter) return;
+      rows.push({ run, suite, result: r });
+    });
+  });
+
+  const tbody = document.getElementById('results-tbody');
+  if (!rows.length) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text3)">No results</td></tr>`; return; }
+  tbody.innerHTML = rows.slice(0,200).map(({run,suite,result:r})=>`<tr>
+    <td><strong>${esc(r.caseTitle||r.caseId)}</strong></td>
+    <td style="font-size:.78rem;color:var(--text2)">${esc(suite?.name||'—')}</td>
+    <td style="font-family:monospace;font-size:.72rem;color:var(--text3);cursor:pointer" onclick="viewRun('${run.id}')">${run.id.split('-').pop().toUpperCase()}</td>
+    <td><span class="badge badge-${r.status}">${r.status.toUpperCase()}</span></td>
+    <td style="color:var(--text3);font-size:.78rem">${r.duration}ms</td>
+    <td style="font-size:.75rem;color:var(--text3)">${r.notes||'—'}</td>
+  </tr>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  REPORTS
+// ═══════════════════════════════════════════════════════
+function renderReports() {
+  const allRes = DB.runs.flatMap(r=>r.results||[]);
+  const pass = allRes.filter(r=>r.status==='pass').length;
+  const fail = allRes.filter(r=>r.status==='fail').length;
+  const total = allRes.length;
+  const pct   = total ? Math.round(pass/total*100) : 0;
+  const avgDur = total ? Math.round(allRes.reduce((s,r)=>s+(r.duration||0),0)/total) : 0;
+
+  document.getElementById('rpt-stats').innerHTML = `
+    <div class="stat" style="--sc:#3fb950"><div class="sn">${pct}%</div><div class="sl">Overall Pass Rate</div></div>
+    <div class="stat" style="--sc:#58a6ff"><div class="sn">${total}</div><div class="sl">Total Executions</div></div>
+    <div class="stat" style="--sc:#ff7b72"><div class="sn">${fail}</div><div class="sl">Total Failures</div></div>
+    <div class="stat" style="--sc:#ffa657"><div class="sn">${avgDur}ms</div><div class="sl">Avg Duration</div></div>
+  `;
+
+  setTimeout(()=>{ drawBar(); drawTrend('chartTrend2'); renderFlaky(); }, 50);
+}
+
+function drawBar() {
+  const canvas = document.getElementById('chartBar');
+  if (!canvas) return;
+  canvas.width = canvas.offsetWidth || 600;
+  const ctx = canvas.getContext('2d');
+  const cats = Object.keys(CAT_META);
+  const data = cats.map(cat => {
+    const suiteIds = DB.suites.filter(s=>s.category===cat).map(s=>s.id);
+    const res = DB.runs.filter(r=>suiteIds.includes(r.suiteId)).flatMap(r=>r.results||[]);
+    return res.length ? Math.round(res.filter(r=>r.status==='pass').length/res.length*100) : 0;
+  });
+  const W=canvas.width, H=canvas.height, pad=40, barW=(W-pad*2)/cats.length*0.6, gap=(W-pad*2)/cats.length;
+  ctx.clearRect(0,0,W,H);
+  [0,25,50,75,100].forEach(v=>{
+    const y=pad+(H-pad*2)*(1-v/100);
+    ctx.strokeStyle='rgba(48,54,61,.5)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(W-pad,y); ctx.stroke();
+    ctx.fillStyle='rgba(110,118,129,.6)'; ctx.font='10px sans-serif'; ctx.fillText(v+'%',2,y+4);
+  });
+  cats.forEach((cat,i)=>{
+    const x = pad + i*gap + (gap-barW)/2;
+    const h = (data[i]/100)*(H-pad*2);
+    const y = H - pad - h;
+    const meta = CAT_META[cat];
+    const grad = ctx.createLinearGradient(0,y,0,H-pad);
+    grad.addColorStop(0,meta.color); grad.addColorStop(1,meta.color+'44');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(x,y,barW,h,4) : ctx.rect(x,y,barW,h);
+    ctx.fill();
+    ctx.fillStyle = meta.color;
+    ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(data[i]+'%',x+barW/2,y-6);
+    ctx.fillStyle='rgba(139,148,158,.7)'; ctx.font='9px sans-serif';
+    ctx.fillText(meta.label,x+barW/2,H-pad+14);
+  });
+}
+
+function renderFlaky() {
+  const caseCounts = {};
+  DB.runs.forEach(r=>(r.results||[]).forEach(res=>{
+    if (!caseCounts[res.caseId]) caseCounts[res.caseId]={pass:0,fail:0,title:res.caseTitle||res.caseId};
+    caseCounts[res.caseId][res.status]=(caseCounts[res.caseId][res.status]||0)+1;
+  }));
+  const flaky = Object.values(caseCounts)
+    .filter(c=>c.pass>0&&c.fail>0)
+    .map(c=>({...c,total:c.pass+c.fail,rate:Math.round(c.fail/(c.pass+c.fail)*100)}))
+    .sort((a,b)=>b.rate-a.rate);
+  document.getElementById('flaky-list').innerHTML = flaky.length
+    ? flaky.map(c=>`<div class="result-row">
+        <div class="result-status fail">⚡</div>
+        <div class="result-name">${esc(c.title)}</div>
+        <span class="badge badge-fail">${c.rate}% fail</span>
+        <span style="font-size:.74rem;color:var(--text3)">${c.total} runs</span>
+      </div>`).join('')
+    : '<div class="empty"><div class="ei">✅</div><p>No flaky tests detected</p></div>';
+}
+
+// ═══════════════════════════════════════════════════════
+//  COVERAGE
+// ═══════════════════════════════════════════════════════
+function renderCoverage() {
+  const cats = Object.keys(CAT_META);
+  document.getElementById('cov-stats').innerHTML = cats.map(c=>{
+    const count = DB.cases.filter(cs=>DB.suites.find(s=>s.id===cs.suiteId)?.category===c).length;
+    const meta  = CAT_META[c];
+    return `<div class="stat" style="--sc:${meta.color}"><div class="sn">${count}</div><div class="sl">${meta.label}</div><div class="sd">${meta.icon}</div></div>`;
+  }).join('');
+
+  document.getElementById('cov-matrix').innerHTML = `
+    <table class="tbl">
+      <thead><tr><th>Category</th><th>Suites</th><th>Cases</th><th>Automated</th><th>Runs</th><th>Pass Rate</th><th>Coverage</th></tr></thead>
+      <tbody>
+        ${cats.map(c=>{
+          const meta = CAT_META[c];
+          const suites = DB.suites.filter(s=>s.category===c);
+          const cases  = DB.cases.filter(cs=>suites.some(s=>s.id===cs.suiteId));
+          const autoCount = cases.filter(cs=>cs.automation==='Automated').length;
+          const runs = DB.runs.filter(r=>suites.some(s=>s.id===r.suiteId));
+          const allRes = runs.flatMap(r=>r.results||[]);
+          const pass = allRes.filter(r=>r.status==='pass').length;
+          const pct  = allRes.length ? Math.round(pass/allRes.length*100) : null;
+          const autoPct = cases.length ? Math.round(autoCount/cases.length*100) : 0;
+          return `<tr>
+            <td><strong>${meta.icon} ${meta.label}</strong></td>
+            <td>${suites.length}</td>
+            <td style="font-weight:700;color:${meta.color}">${cases.length}</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="flex:1;height:4px;background:var(--surface3);border-radius:2px;overflow:hidden"><div style="height:100%;width:${autoPct}%;background:${meta.color};border-radius:2px"></div></div>
+                <span style="font-size:.76rem;color:var(--text2)">${autoPct}%</span>
+              </div>
+            </td>
+            <td>${runs.length}</td>
+            <td>${pct!==null ? `<span style="font-weight:700;color:${pct>=80?'#3fb950':pct>=50?'#ffa657':'#ff7b72'}">${pct}%</span>` : '<span style="color:var(--text3)">—</span>'}</td>
+            <td style="width:140px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="flex:1;height:6px;background:var(--surface3);border-radius:3px;overflow:hidden"><div style="height:100%;width:${autoPct}%;background:${meta.color};border-radius:3px"></div></div>
+                <span style="font-size:.76rem;color:${meta.color};font-weight:700">${autoPct}%</span>
+              </div>
+            </td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  STRATEGY GENERATOR (embedded)
+// ═══════════════════════════════════════════════════════
+function renderGenerator() {
+  const wrap = document.getElementById('strategy-embed');
+  if (wrap._built) return;
+  wrap._built = true;
+  wrap.innerHTML = buildGeneratorUI();
+  initGeneratorEvents();
+}
+
+const GCAT = {
+  functional:    {label:'Functional',    icon:'✅',color:'#3fb950'},
+  performance:   {label:'Performance',   icon:'⚡',color:'#ffa657'},
+  security:      {label:'Security',      icon:'🔐',color:'#ff7b72'},
+  accessibility: {label:'Accessibility',icon:'♿',color:'#d2a8ff'},
+  reliability:   {label:'Reliability',  icon:'🛡️',color:'#58a6ff'},
+  business:      {label:'Business Logic',icon:'💼',color:'#79c0ff'},
+};
+
+function buildGeneratorUI() {
+  return `
+  <div style="display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start">
+    <div class="card">
+      <div class="card-head"><span>⚙️</span><h3>Configuration</h3></div>
+      <div class="card-body" style="display:grid;gap:12px">
+        <div class="field"><label>Application Name</label><input type="text" id="g-app" value="MyService"></div>
+        <div class="field"><label>Architecture</label>
+          <select id="g-arch">
+            <option value="microservices">Microservices (K8s)</option>
+            <option value="monolith">Modular Monolith</option>
+            <option value="serverless">Serverless / Event-Driven</option>
+            <option value="hybrid">Hybrid</option>
+            <option value="event-sourced">Event Sourced + CQRS</option>
+          </select>
+        </div>
+        <div class="field"><label>Tech Stack</label><input type="text" id="g-stack" placeholder="Node.js, PostgreSQL, Redis"></div>
+        <div class="field"><label>Feature Description</label><textarea id="g-desc" style="min-height:90px" placeholder="Describe the feature…"></textarea></div>
+        <div>
+          <label style="display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text2);margin-bottom:6px">Scope</label>
+          <div style="display:flex;flex-wrap:wrap;gap:6px" id="g-scopes">
+            ${Object.entries(GCAT).map(([k,v])=>`<div class="fchip active" data-gs="${k}" style="border-color:${v.color};color:${v.color}">${v.icon} ${v.label}</div>`).join('')}
+          </div>
+        </div>
+        <button class="btn btn-primary" id="g-btn" onclick="runGenerator()">⚡ Generate Strategy</button>
+      </div>
+    </div>
+    <div class="card" id="g-output" style="min-height:300px">
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;text-align:center;color:var(--text3)">
+        <div style="font-size:2.5rem;opacity:.3;margin-bottom:12px">🧪</div>
+        <p style="font-size:.84rem">Configure and click Generate to produce a categorized testing strategy.</p>
+      </div>
+    </div>
+  </div>`;
+}
+
+function initGeneratorEvents() {
+  document.querySelectorAll('#g-scopes .fchip').forEach(c=>{
+    c.addEventListener('click',()=>c.classList.toggle('active'));
+  });
+}
+
+function runGenerator() {
+  const appName = document.getElementById('g-app').value.trim()||'Application';
+  const arch    = document.getElementById('g-arch').value;
+  const stack   = document.getElementById('g-stack').value.trim();
+  const desc    = document.getElementById('g-desc').value.trim();
+  const scopes  = [...document.querySelectorAll('#g-scopes .fchip.active')].map(c=>c.dataset.gs);
+  if (!scopes.length) { toast('Select at least one scope.','⚠️'); return; }
+
+  const btn = document.getElementById('g-btn');
+  btn.disabled=true; btn.textContent='Generating…';
+  setTimeout(()=>{
+    const out = document.getElementById('g-output');
+    const strategy = generateStrategy(appName, arch, stack, desc, scopes);
+    btn.disabled=false; btn.textContent='⚡ Generate Strategy';
+
+    let html = `
+      <div style="display:flex;overflow-x:auto;border-bottom:1px solid var(--border);background:var(--surface2)" id="g-tabs">
+        <button class="tab-btn active" style="border-bottom-color:var(--accent)" onclick="gTab('overview',this)">📊 Overview</button>
+        ${scopes.map(s=>`<button class="tab-btn" onclick="gTab('${s}',this)" style="--tc:${GCAT[s]?.color}">${GCAT[s]?.icon} ${GCAT[s]?.label} <span class="tab-count">${strategy[s]?.length||0}</span></button>`).join('')}
+      </div>
+      <div id="g-pane-overview" class="g-pane" style="padding:18px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:16px">
+          ${scopes.map(s=>`<div class="stat" style="--sc:${GCAT[s].color}"><div class="sn" style="font-size:1.5rem">${strategy[s]?.length||0}</div><div class="sl">${GCAT[s].label}</div></div>`).join('')}
+        </div>
+        <div style="background:var(--surface2);border-radius:var(--r);padding:12px;font-size:.82rem;color:var(--text2)"><strong style="color:var(--text)">${esc(appName)}</strong> · ${arch} · ${esc(stack||'General stack')}</div>
+      </div>
+      ${scopes.map(s=>`<div id="g-pane-${s}" class="g-pane" style="display:none;padding:18px">${(strategy[s]||[]).map(tc=>gCard(tc,GCAT[s]?.color||'#58a6ff')).join('')}</div>`).join('')}
+    `;
+    out.innerHTML = html;
+    toast(`Generated ${Object.values(strategy).flat().length} test cases.`,'✅');
+  }, 800);
+}
+
+function gTab(id, btn) {
+  document.querySelectorAll('.g-pane').forEach(p=>p.style.display='none');
+  document.getElementById('g-pane-'+id).style.display='block';
+  document.querySelectorAll('#g-tabs .tab-btn').forEach(b=>{ b.classList.remove('active'); b.style.borderBottomColor='transparent'; });
+  btn.classList.add('active');
+}
+
+function gCard(tc, color) {
+  const conf = tc.confidence;
+  const cc = conf>=85?'#3fb950':conf>=70?'#ffa657':'#ff7b72';
+  return `<div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid ${color};border-radius:var(--r);padding:14px;margin-bottom:10px">
+    <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+      <span style="font-family:monospace;font-size:.7rem;color:var(--text3);background:var(--surface3);padding:2px 6px;border-radius:4px">${esc(tc.id)}</span>
+      <strong style="font-size:.88rem;flex:1">${esc(tc.title)}</strong>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+      <span class="badge badge-${tc.priority}">${tc.priority.toUpperCase()}</span>
+      <span class="badge badge-blue">🔧 ${esc(tc.tool)}</span>
+      <span class="badge badge-skip">${esc(tc.automation)}</span>
+    </div>
+    <div style="font-size:.8rem;color:var(--text2);margin-bottom:8px">${esc(tc.desc)}</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+      <span style="font-size:.7rem;color:var(--text3)">Confidence</span>
+      <div style="flex:1;height:5px;background:var(--surface3);border-radius:3px;overflow:hidden"><div style="height:100%;width:${conf}%;background:${cc};border-radius:3px"></div></div>
+      <span style="font-size:.76rem;font-weight:700;color:${cc}">${conf}%</span>
+    </div>
+  </div>`;
+}
+
+function generateStrategy(appName, arch, stack, desc, scopes) {
+  const sl = stack.toLowerCase(), dl = desc.toLowerCase();
+  const isMS  = arch==='microservices'||arch==='hybrid';
+  const hasPay= dl.includes('payment')||dl.includes('order')||dl.includes('transact');
+  const hasAuth= dl.includes('auth')||dl.includes('login')||dl.includes('tenant');
+  const hasKafka= sl.includes('kafka')||sl.includes('rabbit');
+  const hasK8s  = sl.includes('k8s')||sl.includes('kubernetes')||sl.includes('docker');
+  const out = {};
+
+  function sc(title,cat,fDesc){
+    const kw={functional:['login','register','crud','api','user','workflow','form'],performance:['load','latency','throughput','stress','rps','sla','scale'],security:['auth','jwt','sql','xss','csrf','tls','encrypt','vuln'],accessibility:['wcag','aria','keyboard','screen reader','contrast','a11y'],reliability:['chaos','fault','circuit','retry','timeout','failover','heal'],business:['domain','rule','workflow','state','edge','saga','idempotent']};
+    const words=kw[cat]||[];const hits=words.filter(w=>(fDesc+' '+title).toLowerCase().includes(w)).length;
+    return Math.max(45,Math.min(98,Math.round(50+(hits/Math.max(words.length,1))*50)+(Math.random()*10-5)));
+  }
+
+  if (scopes.includes('functional')) out.functional = [
+    {id:'FN-001',title:'Happy path — core feature E2E',priority:'critical',tool:'Cypress',automation:'Automated',desc:'Full end-to-end validation of the primary user workflow.',confidence:sc('happy path e2e','functional',desc)},
+    {id:'FN-002',title:'Regression suite — all API endpoints',priority:'high',tool:'Jest + Supertest',automation:'Automated',desc:'Prevent regressions across all API surface area.',confidence:sc('regression api','functional',desc)},
+    {id:'FN-003',title:'Input validation — boundaries and negatives',priority:'high',tool:'Supertest',automation:'Automated',desc:'Boundary values, null inputs, oversized payloads.',confidence:sc('input validation boundary','functional',desc)},
+    ...(hasAuth?[{id:'FN-004',title:'RBAC — privilege escalation prevention',priority:'critical',tool:'Postman/Newman',automation:'Automated',desc:'Tenant isolation and role enforcement at all endpoints.',confidence:sc('rbac auth tenant','functional',desc)}]:[]),
+    {id:'FN-005',title:'Consumer-driven contract tests',priority:'high',tool:'Pact',automation:'Automated',desc:'Provider verifies all registered consumer pacts.',confidence:sc('contract consumer provider pact','functional',desc)},
+  ];
+
+  if (scopes.includes('performance')) out.performance = [
+    {id:'PERF-001',title:'Baseline load — target RPS for 30 min',priority:'critical',tool:'k6',automation:'Automated',desc:'Validate p95 < 200ms, error rate < 0.1% at target load.',confidence:sc('load rps latency sla','performance',desc)},
+    {id:'PERF-002',title:'Stress test — beyond capacity envelope',priority:'high',tool:'k6 / Gatling',automation:'Automated',desc:'Find system breaking point and validate graceful degradation.',confidence:sc('stress capacity breaking','performance',desc)},
+    {id:'PERF-003',title:'Spike test — 10× burst in 30 seconds',priority:'high',tool:'k6',automation:'Automated',desc:'Flash traffic spike resilience and queue drain time.',confidence:sc('spike burst traffic','performance',desc)},
+    {id:'PERF-004',title:'DB query performance — slow query analysis',priority:'medium',tool:'pgBadger',automation:'Automated',desc:'No full table scans; p99 query time < 50ms.',confidence:sc('db query slow index','performance',desc)},
+  ];
+
+  if (scopes.includes('security')) out.security = [
+    {id:'SEC-001',title:'OWASP Top 10 — automated ZAP scan',priority:'critical',tool:'OWASP ZAP',automation:'Automated',desc:'Zero critical/high unmitigated findings.',confidence:sc('owasp top 10 vuln xss sql','security',desc)},
+    {id:'SEC-002',title:'Auth boundaries — JWT/OAuth penetration',priority:'critical',tool:'Burp Suite',automation:'Manual+Auto',desc:'Token replay, algorithm confusion, privilege escalation.',confidence:sc('jwt oauth auth token','security',desc)},
+    {id:'SEC-003',title:'Dependency CVE scan — Trivy/Snyk',priority:'high',tool:'Trivy / Snyk',automation:'Automated',desc:'No CVE score ≥ CVSS 7.0 in production dependencies.',confidence:sc('cve dependency supply chain','security',desc)},
+    ...(hasPay?[{id:'SEC-004',title:'PCI-DSS — cardholder data validation',priority:'critical',tool:'Audit + TLS Inspector',automation:'Manual+Auto',desc:'No raw PAN in logs, DB, or responses. TLS 1.2+ enforced.',confidence:sc('pci payment pan tls encrypt','security',desc)}]:[]),
+    {id:'SEC-005',title:'Secrets scanning — no credentials in code',priority:'high',tool:'truffleHog / git-secrets',automation:'Automated',desc:'Zero secrets committed to source control.',confidence:sc('secrets credentials hardcoded','security',desc)},
+  ];
+
+  if (scopes.includes('accessibility')) out.accessibility = [
+    {id:'A11Y-001',title:'WCAG 2.2 AA — axe-core automated audit',priority:'high',tool:'axe-core / Lighthouse',automation:'Automated',desc:'Zero critical violations; Lighthouse score ≥ 90.',confidence:sc('wcag a11y axe lighthouse','accessibility',desc)},
+    {id:'A11Y-002',title:'Screen reader — NVDA + VoiceOver',priority:'high',tool:'NVDA / VoiceOver',automation:'Manual',desc:'All interactive elements correctly announced.',confidence:sc('screen reader nvda voiceover aria','accessibility',desc)},
+    {id:'A11Y-003',title:'Keyboard-only navigation — full operability',priority:'high',tool:'Manual + Cypress',automation:'Manual+Auto',desc:'No mouse required; visible focus at all times.',confidence:sc('keyboard focus navigation tab','accessibility',desc)},
+    {id:'A11Y-004',title:'Color contrast — AA ratio compliance',priority:'medium',tool:'axe-core',automation:'Automated',desc:'Normal text ≥ 4.5:1, large text ≥ 3:1.',confidence:sc('color contrast ratio wcag','accessibility',desc)},
+  ];
+
+  if (scopes.includes('reliability')) out.reliability = [
+    {id:'REL-001',title:'Chaos — network partition simulation',priority:'critical',tool:isMS?'Toxiproxy / Chaos Mesh':'Chaos Monkey',automation:'Automated',desc:'No cascading failures; auto-recovery on partition heal.',confidence:sc('chaos network partition fault','reliability',desc)},
+    {id:'REL-002',title:'Circuit breaker — state machine transitions',priority:'critical',tool:'Resilience4j',automation:'Automated',desc:'CLOSED→OPEN→HALF_OPEN→CLOSED under failure injection.',confidence:sc('circuit breaker resilience fail fast','reliability',desc)},
+    ...(hasKafka?[{id:'REL-003',title:'Kafka — exactly-once delivery under failure',priority:'high',tool:'Testcontainers + Kafka',automation:'Automated',desc:'No message loss during broker failover; DLQ routing.',confidence:sc('kafka exactly once dlq broker','reliability',desc)}]:[]),
+    {id:'REL-004',title:hasK8s?'K8s self-healing — pod restart validation':'Self-healing — auto-recovery',priority:'high',tool:hasK8s?'K8s + Prometheus':'Custom Monitor',automation:'Automated',desc:'Traffic rerouted before pod termination; readiness probe guards.',confidence:sc('kubernetes pod restart selfheal liveness','reliability',desc)},
+    {id:'REL-005',title:'Distributed tracing — OpenTelemetry validation',priority:'medium',tool:'Jaeger / OpenTelemetry',automation:'Automated',desc:'Full trace captured; error spans correctly attributed.',confidence:sc('tracing opentelemetry jaeger span','reliability',desc)},
+  ];
+
+  if (scopes.includes('business')) out.business = [
+    {id:'BIZ-001',title:'Domain invariant enforcement',priority:'critical',tool:'JUnit 5 / pytest',automation:'Automated',desc:'All business rules enforced at domain layer, not just UI.',confidence:sc('domain invariant business rule','business',desc)},
+    {id:'BIZ-002',title:'Property-based — boundary value analysis',priority:'high',tool:'fast-check / Hypothesis',automation:'Automated',desc:'1000+ random valid inputs; invariants hold for all.',confidence:sc('property boundary edge case equivalence','business',desc)},
+    ...(hasPay?[{id:'BIZ-003',title:'Monetary precision — BigDecimal arithmetic',priority:'critical',tool:'Custom assertion lib',automation:'Automated',desc:'No float/double; rounding rules correct per jurisdiction.',confidence:sc('monetary decimal currency rounding payment','business',desc)}]:[]),
+    {id:'BIZ-004',title:'Saga compensation — partial failure rollback',priority:'critical',tool:'Integration + Chaos',automation:'Automated',desc:'Compensation idempotent; all steps rolled back on failure.',confidence:sc('saga compensation rollback distributed transaction','business',desc)},
+    {id:'BIZ-005',title:'BDD workflow — multi-actor scenarios',priority:'high',tool:'Cucumber',automation:'Automated',desc:'Given-When-Then scenarios match business acceptance criteria.',confidence:sc('bdd cucumber workflow actor','business',desc)},
+  ];
+
+  return out;
+}
+
+// ═══════════════════════════════════════════════════════
+//  INNER TAB SWITCH
+// ═══════════════════════════════════════════════════════
+function switchInnerTab(parent, id) {
+  document.querySelectorAll(`[data-parent="${parent}"]`).forEach(p=>p.classList.remove('active'));
+  document.getElementById(`${parent}-tab-${id}`).classList.add('active');
+  document.querySelectorAll(`#${parent}-tabs .tab-btn`).forEach((b,i)=>{
+    b.classList.toggle('active', b.getAttribute('onclick').includes(`'${id}'`));
+  });
+  if (parent==='reports') renderReports();
+}
+
+// ═══════════════════════════════════════════════════════
+//  MODALS
+// ═══════════════════════════════════════════════════════
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  if (id==='modal-new-case') {
+    const sel = document.getElementById('nc-suite');
+    sel.innerHTML = DB.suites.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('')||'<option>No suites yet</option>';
+  }
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-backdrop').forEach(m=>{
+  m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); });
+});
+
+// ═══════════════════════════════════════════════════════
+//  SETTINGS
+// ═══════════════════════════════════════════════════════
+function confirmReset() {
+  if (!confirm('Reset ALL data? This cannot be undone.')) return;
+  localStorage.removeItem('qa-portal-db');
+  DB = defaultDB(); save(); nav('dashboard');
+  toast('All data reset to defaults.','🔄');
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='qa-portal-data.json'; a.click();
+  URL.revokeObjectURL(url); toast('Data exported.','📥');
+}
+
+function importData() { document.getElementById('import-input').click(); }
+
+function handleImport(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.suites && data.cases && data.runs) {
+        DB = data; save(); nav(currentPage);
+        toast('Data imported successfully.','✅');
+      } else { toast('Invalid file format.','⚠️'); }
+    } catch { toast('Failed to parse JSON file.','❌'); }
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+// ═══════════════════════════════════════════════════════
+//  UTILITIES
+// ═══════════════════════════════════════════════════════
+function esc(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmt(iso){ return iso ? new Date(iso).toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—'; }
+function fmtDate(iso){ return iso ? new Date(iso).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}) : '—'; }
+
+let _toastT=null;
+function toast(msg, icon='ℹ️'){
+  const el=document.getElementById('toast');
+  el.innerHTML=`${icon} ${esc(msg)}`; el.classList.add('show');
+  clearTimeout(_toastT); _toastT=setTimeout(()=>el.classList.remove('show'),3200);
+}
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+save();
+renderDashboard();
+</script>
+</body>
+</html>
