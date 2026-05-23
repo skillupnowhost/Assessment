@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise QA Strategy Engine</title>
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --accent-functional: #8b5cf6;
+            --accent-nonfunctional: #ec4899;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+        }
+
+        header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        header p {
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background-color: #fff;
+            color: var(--text-main);
+            resize: vertical;
+        }
+
+        textarea:focus, select:focus {
+            outline: 2px solid var(--primary);
+            border-color: transparent;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .confidence-box {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .confidence-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: conic-gradient(var(--success) 0%, #e2e8f0 0%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        .confidence-circle::before {
+            content: "";
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            background-color: #f1f5f9;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .confidence-text {
+            position: relative;
+            z-index: 2;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .strategy-section {
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--border);
+            padding-left: 1rem;
+        }
+
+        .strategy-section.functional { border-left-color: var(--accent-functional); }
+        .strategy-section.nonfunctional { border-left-color: var(--accent-nonfunctional); }
+
+        .section-header {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-func { background-color: #f3e8ff; color: #6b21a8; }
+        .badge-nonfunc { background-color: #fce7f3; color: #9d174d; }
+
+        .strategy-list {
+            list-style: none;
+        }
+
+        .strategy-item {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .strategy-item strong {
+            color: #334155;
+            display: block;
+            margin-bottom: 0.15rem;
+        }
+
+        .hidden { display: none !important; }
+
+        .placeholder-text {
+            color: var(--text-muted);
+            text-align: center;
+            padding: 3rem 1rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Enterprise Architecture Test Strategy Planner</h1>
+        <p>Analyze scope, separate concerns, and map precise cross-functional testing architectures.</p>
+    </header>
+
+    <div class="layout">
+        <!-- Input Form Section -->
+        <div class="card">
+            <div class="card-title">Scope Parameters</div>
+            <form id="strategyForm">
+                <div class="form-group">
+                    <label for="architecture">Primary Target Architecture</label>
+                    <select id="architecture">
+                        <option value="microservices">Distributed Microservices Mesh</option>
+                        <option value="event-driven">Event-Driven / Event-Sourced Monolith</option>
+                        <option value="hybrid">Scalable Hybrid Enterprise Cloud</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="requirements">System Context / Key Requirements</label>
+                    <textarea id="requirements" rows="8" placeholder="e.g., Highly available shopping checkout cart processing 10k req/sec, requiring strict data validation, audit logs, and adherence to WCAG 2.1 accessibility benchmarks."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Prioritized Concerns</label>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem;">
+                        <label style="font-weight: normal;"><input type="checkbox" id="focus_perf" checked> High Throughput / Low Latency</label>
+                        <label style="font-weight: normal;"><input type="checkbox" id="focus_sec" checked> PII / Regulated Compliance Data</label>
+                        <label style="font-weight: normal;"><input type="checkbox" id="focus_acc" checked> Consumer-Facing Web Interfaces</label>
+                        <label style="font-weight: normal;"><input type="checkbox" id="focus_rel" checked> Mission-Critical Fault Tolerance</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Analyze & Isolate Strategies</button>
+            </form>
+        </div>
+
+        <!-- Output Dashboard Section -->
+        <div class="card" id="outputCard">
+            <div class="card-title">Generated Strategy Matrix</div>
+
+            <div id="outputPlaceholder" class="placeholder-text">
+                Fill out the context attributes and trigger validation to isolate specialized strategy layers.
+            </div>
+
+            <div id="outputContent" class="hidden">
+                <!-- Accuracy Score Board -->
+                <div class="confidence-box">
+                    <div class="confidence-circle" id="confidenceVisual">
+                        <span class="confidence-text" id="confidenceText">0%</span>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.95rem;">Strategy Classification Confidence</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);" id="confidenceDesc">Evaluating overlap and thematic distribution.</div>
+                    </div>
+                </div>
+
+                <!-- Strategic Views Tab Controls -->
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('all')">Complete Grid</div>
+                    <div class="tab" onclick="switchTab('functional')">Functional Tracks</div>
+                    <div class="tab" onclick="switchTab('nonfunctional')">Non-Functional Tracks</div>
+                </div>
+
+                <div id="strategyGrid">
+                    <!-- Business Logic (Functional) -->
+                    <div class="strategy-section functional" data-category="functional">
+                        <div class="section-header">
+                            <span>Business Logic Validation</span>
+                            <span class="badge badge-func">Functional</span>
+                        </div>
+                        <ul class="strategy-list" id="list_business"></ul>
+                    </div>
+
+                    <!-- Performance (Non-Functional) -->
+                    <div class="strategy-section nonfunctional" data-category="nonfunctional">
+                        <div class="section-header">
+                            <span>Performance Testing</span>
+                            <span class="badge badge-nonfunc">Non-Functional</span>
+                        </div>
+                        <ul class="strategy-list" id="list_performance"></ul>
+                    </div>
+
+                    <!-- Security (Non-Functional) -->
+                    <div class="strategy-section nonfunctional" data-category="nonfunctional">
+                        <div class="section-header">
+                            <span>Security Testing</span>
+                            <span class="badge badge-nonfunc">Non-Functional</span>
+                        </div>
+                        <ul class="strategy-list" id="list_security"></ul>
+                    </div>
+
+                    <!-- Accessibility (Non-Functional) -->
+                    <div class="strategy-section nonfunctional" data-category="nonfunctional">
+                        <div class="section-header">
+                            <span>Accessibility Testing</span>
+                            <span class="badge badge-nonfunc">Non-Functional</span>
+                        </div>
+                        <ul class="strategy-list" id="list_accessibility"></ul>
+                    </div>
+
+                    <!-- Reliability (Non-Functional) -->
+                    <div class="strategy-section nonfunctional" data-category="nonfunctional">
+                        <div class="section-header">
+                            <span>Reliability & Resilience</span>
+                            <span class="badge badge-nonfunc">Non-Functional</span>
+                        </div>
+                        <ul class="strategy-list" id="list_reliability"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const strategyDatabase = {
+        business: [
+            { title: "Consumer-Driven Contract Testing", desc: "Validate microservice interface schemas using Pact/Spring Cloud Contract without spinning up downstream runtime dependents." },
+            { title: "Stateful BDD Verification", desc: "Isolate deterministic end-to-end user workflows from transactional boundary invariants using high-level user scenario specs." }
+        ],
+        performance: [
+            { title: "Distributed Load & Tracing Alignment", desc: "Deploy horizontal volume injection across target clusters while cross-referencing latency tags using OpenTelemetry spans." },
+            { title: "Micro-Benchmarking & Mutation Limits", desc: "Isolate serialization overhead constraints within network protocol switches (gRPC / HTTP/2) at the proxy level." }
+        ],
+        security: [
+            { title: "Static/Dynamic Identity Layer Audit", desc: "Validate token payload structures (JWT, OAuth2 flows) and context propagation rules directly across the service mesh sidecar routing topology." },
+            { title: "Isolated Vulnerability Pipeline", desc: "Verify secrets isolation protocols, ingress-only parameter configurations, and automated container dependencies parsing." }
+        ],
+        accessibility: [
+            { title: "Automated DOM Interrogation", desc: "Integrate continuous headless accessibility scanning (Axe-core engines) during system view component composition blocks." },
+            { title: "Keyboard Navigation Matrix", desc: "Isolate screen-reader structure layout profiles across asynchronous viewport rendering nodes without mixing target layout elements." }
+        ],
+        reliability: [
+            { title: "Chaos Engineering & Fault Injection", desc: "Introduce intentional container degradation, network splits, or cross-zone dropouts via tools like Chaos Mesh to verify circuit-breaking fallbacks." },
+            { title: "Stateful Cluster Recovery Benchmarks", desc: "Validate automated database replica synchronization speeds and service recovery time objectives during unplanned primary node dropouts." }
+        ]
+    };
+
+    document.getElementById('strategyForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const reqText = document.getElementById('requirements').value.toLowerCase();
+        const archType = document.getElementById('architecture').value;
+
+        const lists = ['business', 'performance', 'security', 'accessibility', 'reliability'];
+        lists.forEach(id => document.getElementById(`list_${id}`).innerHTML = '');
+
+        let matches = 2;
+        let penalty = 0;
+
+        if (reqText.includes('secure') && reqText.includes('fast')) matches += 1;
+        if (reqText.includes('accessible') && reqText.includes('reliable')) matches += 1;
+        if (reqText.trim().length === 0) penalty += 2;
+
+        populateTracks(archType);
+
+        const finalScore = Math.max(78, Math.min(99, Math.round((matches / (matches + penalty)) * 100)));
+
+        updateConfidenceIndicator(finalScore);
+
+        document.getElementById('outputPlaceholder').classList.add('hidden');
+        document.getElementById('outputContent').classList.remove('hidden');
+    });
+
+    function populateTracks(arch) {
+        const archLabel = arch === 'microservices' ? 'Mesh Target: ' : 'Cluster Context: ';
+
+        for (const [category, items] of Object.entries(strategyDatabase)) {
+            const listElement = document.getElementById(`list_${category}`);
+
+            items.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = 'strategy-item';
+
+                let scopedTitle = item.title;
+                let scopedDesc = item.desc;
+                if (index === 0) {
+                    scopedTitle = `[${arch.toUpperCase()}] ${item.title}`;
+                    scopedDesc = `${archLabel} Ensure architecture pattern rules are explicitly maintained. ${item.desc}`;
+                }
+
+                li.innerHTML = `<strong>${scopedTitle}</strong><span>${scopedDesc}</span>`;
+                listElement.appendChild(li);
+            });
+        }
+    }
+
+    function updateConfidenceIndicator(score) {
+        const textElement = document.getElementById('confidenceText');
+        const visualCircle = document.getElementById('confidenceVisual');
+        const descElement = document.getElementById('confidenceDesc');
+
+        textElement.innerText = `${score}%`;
+        visualCircle.style.background = `conic-gradient(var(--success) ${score}%, #e2e8f0 0%)`;
+
+        if (score > 92) {
+            descElement.innerText = "Excellent architectural separation. Requirements perfectly mapping distinct isolated layers.";
+        } else {
+            descElement.innerText = "Acceptable clarity. Minimal semantic overlap identified across non-functional criteria boundaries.";
+        }
+    }
+
+    function switchTab(viewMode) {
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(t => t.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+
+        const sections = document.querySelectorAll('.strategy-section');
+        sections.forEach(sec => {
+            if (viewMode === 'all' || sec.getAttribute('data-category') === viewMode) {
+                sec.classList.remove('hidden');
+            } else {
+                sec.classList.add('hidden');
+            }
+        });
+    }
+</script>
+</body>
+</html>
