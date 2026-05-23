@@ -277,28 +277,112 @@ canvas{display:block}
 
     <!-- ══ SUITES ══ -->
     <div class="page" id="page-suites">
+      <!-- Inline Create Form -->
+      <div class="card" style="margin-bottom:16px;border-top:3px solid var(--accent)">
+        <div class="card-head" style="cursor:pointer" onclick="toggleCreate('suite-form')">
+          <span>➕</span><h3>Create New Test Suite</h3>
+          <span id="suite-form-toggle" style="color:var(--text3);font-size:.8rem">▼ expand</span>
+        </div>
+        <div id="suite-form" style="display:none">
+          <div class="card-body">
+            <div class="form-row cols2">
+              <div class="field"><label>Suite Name *</label><input type="text" id="ns-name" placeholder="e.g. Auth Service — Regression"></div>
+              <div class="field"><label>Owner</label><input type="text" id="ns-owner" value="QA Team" placeholder="Team or engineer name"></div>
+            </div>
+            <div class="form-row cols2">
+              <div class="field"><label>Category</label>
+                <select id="ns-cat">
+                  <option value="functional">✅ Functional</option>
+                  <option value="performance">⚡ Performance</option>
+                  <option value="security">🔐 Security</option>
+                  <option value="accessibility">♿ Accessibility</option>
+                  <option value="reliability">🛡️ Reliability</option>
+                  <option value="business">💼 Business Logic</option>
+                </select>
+              </div>
+              <div class="field"><label>Environment</label>
+                <select id="ns-env">
+                  <option value="dev">Development</option>
+                  <option value="staging" selected>Staging</option>
+                  <option value="prod">Production</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row cols2">
+              <div class="field"><label>Description</label><textarea id="ns-desc" placeholder="What does this suite validate?" style="min-height:60px"></textarea></div>
+              <div class="field"><label>Tags (comma separated)</label><input type="text" id="ns-tags" placeholder="smoke, regression, api"></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:4px">
+              <button class="btn btn-primary" onclick="saveSuite()">✅ Create Suite</button>
+              <button class="btn btn-secondary" onclick="toggleCreate('suite-form')">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Search + List -->
       <div class="search-bar">
-        <input type="text" id="suite-search" placeholder="Search suites…" oninput="renderSuites()">
-        <button class="btn btn-primary" onclick="openModal('modal-new-suite')">+ New Suite</button>
+        <input type="text" id="suite-search" placeholder="Search suites…" oninput="renderSuites()" style="flex:1">
       </div>
       <div id="suites-list"></div>
     </div>
 
     <!-- ══ CASES ══ -->
     <div class="page" id="page-cases">
+      <!-- Inline Create Form -->
+      <div class="card" style="margin-bottom:16px;border-top:3px solid var(--green)">
+        <div class="card-head" style="cursor:pointer" onclick="toggleCreate('case-form')">
+          <span>🧪</span><h3>Create New Test Case</h3>
+          <span id="case-form-toggle" style="color:var(--text3);font-size:.8rem">▼ expand</span>
+        </div>
+        <div id="case-form" style="display:none">
+          <div class="card-body">
+            <div class="form-row cols2">
+              <div class="field"><label>Suite *</label><select id="nc-suite-inline"></select></div>
+              <div class="field"><label>Priority</label>
+                <select id="nc-priority-inline">
+                  <option value="critical">Critical</option>
+                  <option value="high">High</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row"><div class="field"><label>Title *</label><input type="text" id="nc-title-inline" placeholder="e.g. Verify order creation with valid payload"></div></div>
+            <div class="form-row cols2">
+              <div class="field"><label>Automation</label>
+                <select id="nc-auto-inline">
+                  <option value="Automated">Automated</option>
+                  <option value="Manual">Manual</option>
+                  <option value="Semi-automated">Semi-automated</option>
+                </select>
+              </div>
+              <div class="field"><label>Tool</label><input type="text" id="nc-tool-inline" placeholder="e.g. Jest, Cypress, k6, Postman"></div>
+            </div>
+            <div class="form-row cols2">
+              <div class="field"><label>Description</label><textarea id="nc-desc-inline" placeholder="What does this test validate?" style="min-height:60px"></textarea></div>
+              <div class="field"><label>Steps (one per line)</label><textarea id="nc-steps-inline" placeholder="1. Open login page&#10;2. Enter credentials&#10;3. Click submit" style="min-height:60px"></textarea></div>
+            </div>
+            <div class="form-row"><div class="field"><label>Expected Results (one per line)</label><textarea id="nc-expect-inline" placeholder="HTTP 200 returned&#10;User redirected to dashboard" style="min-height:50px"></textarea></div></div>
+            <div style="display:flex;gap:8px;margin-top:4px">
+              <button class="btn btn-primary" onclick="saveCaseInline()">✅ Create Test Case</button>
+              <button class="btn btn-secondary" onclick="toggleCreate('case-form')">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Filters + Table -->
       <div class="search-bar">
-        <input type="text" id="case-search" placeholder="Search test cases…" oninput="renderCases()">
-        <select id="case-suite-filter" onchange="renderCases()" style="width:200px">
+        <input type="text" id="case-search" placeholder="Search test cases…" oninput="renderCases()" style="flex:1">
+        <select id="case-suite-filter" onchange="renderCases()" style="min-width:200px">
           <option value="">All Suites</option>
         </select>
-        <button class="btn btn-primary" onclick="openModal('modal-new-case')">+ New Test Case</button>
       </div>
       <div class="filter-chips" id="case-priority-filter">
         <div class="fchip active" data-pf="all">All</div>
-        <div class="fchip" data-pf="critical">Critical</div>
-        <div class="fchip" data-pf="high">High</div>
-        <div class="fchip" data-pf="medium">Medium</div>
-        <div class="fchip" data-pf="low">Low</div>
+        <div class="fchip" data-pf="critical">🔴 Critical</div>
+        <div class="fchip" data-pf="high">🟠 High</div>
+        <div class="fchip" data-pf="medium">🟡 Medium</div>
+        <div class="fchip" data-pf="low">🟢 Low</div>
       </div>
       <div class="card">
         <table class="tbl">
@@ -360,27 +444,76 @@ canvas{display:block}
     <!-- ══ REPORTS ══ -->
     <div class="page" id="page-reports">
       <div class="tabs" id="reports-tabs">
-        <button class="tab-btn active" onclick="switchInnerTab('reports','summary')">Summary</button>
-        <button class="tab-btn" onclick="switchInnerTab('reports','trend')">Trend Analysis</button>
-        <button class="tab-btn" onclick="switchInnerTab('reports','flaky')">Flaky Tests</button>
+        <button class="tab-btn active" onclick="switchInnerTab('reports','summary')">📊 Summary</button>
+        <button class="tab-btn" onclick="switchInnerTab('reports','fullreport')">📋 Full Report</button>
+        <button class="tab-btn" onclick="switchInnerTab('reports','trend')">📈 Trend</button>
+        <button class="tab-btn" onclick="switchInnerTab('reports','flaky')">🔥 Flaky Tests</button>
+        <button class="tab-btn" onclick="switchInnerTab('reports','execlog')">🗒 Execution Log</button>
       </div>
+
+      <!-- TAB: Summary -->
       <div class="tab-pane active" id="reports-tab-summary" data-parent="reports">
         <div class="stats-row" id="rpt-stats"></div>
-        <div class="card">
-          <div class="card-head"><span>📊</span><h3>Category Pass Rate</h3></div>
-          <div class="card-body"><canvas id="chartBar" height="220"></canvas></div>
+        <div class="grid2">
+          <div class="card">
+            <div class="card-head"><span>📊</span><h3>Pass Rate by Category</h3></div>
+            <div class="card-body"><canvas id="chartBar" height="220"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span>🏆</span><h3>Suite Scorecard</h3></div>
+            <div class="card-body" id="rpt-scorecard" style="padding:0"></div>
+          </div>
+        </div>
+        <div style="margin-top:16px" class="card">
+          <div class="card-head"><span>⏱</span><h3>Duration Heatmap — Avg Execution Time per Suite</h3></div>
+          <div class="card-body" id="rpt-duration"></div>
         </div>
       </div>
+
+      <!-- TAB: Full Report -->
+      <div class="tab-pane" id="reports-tab-fullreport" data-parent="reports">
+        <div id="full-report-content"></div>
+      </div>
+
+      <!-- TAB: Trend -->
       <div class="tab-pane" id="reports-tab-trend" data-parent="reports">
-        <div class="card">
-          <div class="card-head"><span>📈</span><h3>Pass Rate — Last 10 Runs</h3></div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-head"><span>📈</span><h3>Pass Rate Trend — All Runs Chronological</h3></div>
           <div class="card-body"><canvas id="chartTrend2" height="240"></canvas></div>
         </div>
+        <div class="card">
+          <div class="card-head"><span>📉</span><h3>Failure Rate per Suite — Latest Run</h3></div>
+          <div class="card-body" id="rpt-fail-bars"></div>
+        </div>
       </div>
+
+      <!-- TAB: Flaky -->
       <div class="tab-pane" id="reports-tab-flaky" data-parent="reports">
         <div class="card">
-          <div class="card-head"><span>🔥</span><h3>Flaky Test Candidates</h3></div>
+          <div class="card-head"><span>🔥</span><h3>Flaky Test Candidates <span style="font-size:.75rem;color:var(--text3);font-weight:400">(passed in some runs, failed in others)</span></h3></div>
           <div class="card-body" id="flaky-list"></div>
+        </div>
+      </div>
+
+      <!-- TAB: Execution Log -->
+      <div class="tab-pane" id="reports-tab-execlog" data-parent="reports">
+        <div class="search-bar" style="margin-bottom:12px">
+          <input type="text" id="execlog-search" placeholder="Search test cases…" oninput="renderExecLog()">
+          <select id="execlog-status" onchange="renderExecLog()" style="min-width:130px">
+            <option value="">All Statuses</option>
+            <option value="pass">Pass</option>
+            <option value="fail">Fail</option>
+            <option value="skip">Skip</option>
+          </select>
+          <select id="execlog-suite" onchange="renderExecLog()" style="min-width:200px">
+            <option value="">All Suites</option>
+          </select>
+        </div>
+        <div class="card">
+          <table class="tbl" id="execlog-table">
+            <thead><tr><th>#</th><th>Test Case</th><th>Suite</th><th>Category</th><th>Priority</th><th>Status</th><th>Duration</th><th>Run Date</th></tr></thead>
+            <tbody id="execlog-tbody"></tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -548,79 +681,190 @@ const CAT_META = {
   business:      {label:'Business Logic',icon:'💼', color:'#79c0ff'},
 };
 
-let DB = load();
-
-function load() {
-  try { return JSON.parse(localStorage.getItem('qa-portal-db')) || defaultDB(); }
-  catch { return defaultDB(); }
-}
-
-function save() { localStorage.setItem('qa-portal-db', JSON.stringify(DB)); updateBadges(); }
-
-function defaultDB() {
-  const suites = [
-    mk('suite', {name:'Auth Service — Regression', category:'functional', env:'staging', owner:'Backend Team', tags:'regression,auth,api', desc:'Full regression suite for authentication and authorization flows.'}),
-    mk('suite', {name:'Order API — Performance',   category:'performance', env:'staging', owner:'Perf Team',    tags:'load,sla,k6',         desc:'Load and stress tests for the Order Management API.'}),
-    mk('suite', {name:'Payment — Security Audit',  category:'security',   env:'staging', owner:'SecOps',        tags:'pci,owasp,pentest',   desc:'PCI-DSS and OWASP Top 10 security validation.'}),
-    mk('suite', {name:'UI — Accessibility',        category:'accessibility',env:'dev',   owner:'Frontend Team', tags:'wcag,a11y,aria',      desc:'WCAG 2.2 AA compliance for all UI components.'}),
-    mk('suite', {name:'Checkout — Business Logic', category:'business',   env:'staging', owner:'QA Team',       tags:'domain,saga,biz',     desc:'Business rule validation and saga compensation flows.'}),
-  ];
-
-  const cases = [];
-  const sampleCases = [
-    {suite:0, title:'Happy path login with valid credentials',         priority:'critical', auto:'Automated',      tool:'Cypress',     desc:'Verify user can log in with valid email/password.', steps:'Open login page\nEnter valid credentials\nClick sign in\nVerify redirect to dashboard', expect:'Dashboard loads\nJWT token set\nSession active'},
-    {suite:0, title:'Login rejected with invalid password',            priority:'high',     auto:'Automated',      tool:'Cypress',     desc:'Verify incorrect password returns 401.', steps:'Open login page\nEnter wrong password\nClick sign in', expect:'Error message displayed\nHTTP 401 returned\nNo token issued'},
-    {suite:0, title:'JWT token expiry forces re-authentication',       priority:'high',     auto:'Automated',      tool:'Supertest',   desc:'Expired JWT must be rejected.', steps:'Use expired JWT in Authorization header\nSend API request', expect:'HTTP 401 Unauthorized\nError body: token_expired'},
-    {suite:0, title:'RBAC — Admin cannot access super-admin endpoint', priority:'critical', auto:'Automated',      tool:'Postman',     desc:'Privilege escalation prevention.', steps:'Authenticate as Admin\nAccess /admin/super endpoint', expect:'HTTP 403 Forbidden\nNo data returned'},
-    {suite:1, title:'Baseline load — 500 RPS for 30 minutes',         priority:'critical', auto:'Automated',      tool:'k6',          desc:'Validate p95 latency < 200ms at target load.', steps:'Ramp up to 500 RPS\nSustain 30 minutes\nRecord metrics', expect:'p95 < 200ms\nError rate < 0.1%\nNo OOM errors'},
-    {suite:1, title:'Spike test — 5× burst traffic',                  priority:'high',     auto:'Automated',      tool:'k6',          desc:'Sudden 5x traffic spike validation.', steps:'Inject spike to 2500 RPS\nMonitor queue depth', expect:'No 5xx errors\nCircuit breaker activates\nRecovery < 60s'},
-    {suite:1, title:'DB connection pool exhaustion simulation',        priority:'medium',   auto:'Automated',      tool:'k6+pgBench',  desc:'Validate behavior when DB pool is saturated.', steps:'Exhaust connection pool\nObserve application behavior', expect:'Graceful queuing\nTimeout returned within SLA'},
-    {suite:2, title:'OWASP ZAP active scan — all endpoints',          priority:'critical', auto:'Automated',      tool:'OWASP ZAP',   desc:'Full OWASP Top 10 automated scan.', steps:'Configure ZAP spider\nRun active scan\nReview findings', expect:'Zero critical findings\nZero high findings unmitigated'},
-    {suite:2, title:'SQL injection via order filter parameter',        priority:'critical', auto:'Automated',      tool:'Burp Suite',  desc:'Parameterized queries prevent SQLi.', steps:'Inject SQLi payloads in filter\nObserve response', expect:'All inputs sanitized\nHTTP 400 returned\nNo DB error leaked'},
-    {suite:3, title:'Axe-core scan — all page templates',             priority:'high',     auto:'Automated',      tool:'axe-core',    desc:'WCAG 2.2 AA automated compliance.', steps:'Run axe on all page templates\nRecord violations', expect:'Zero critical violations\nLighthouse score >= 90'},
-    {suite:3, title:'Keyboard-only navigation — checkout flow',       priority:'high',     auto:'Manual',         tool:'Manual',      desc:'Full checkout via keyboard only.', steps:'Tab through all fields\nComplete checkout\nNo mouse used', expect:'All controls reachable\nFocus visible at all times'},
-    {suite:4, title:'Order saga — payment failure compensation',      priority:'critical', auto:'Automated',      tool:'JUnit 5',     desc:'Verify saga rolls back on payment failure.', steps:'Initiate order saga\nInject payment failure\nObserve compensation', expect:'Inventory released\nOrder cancelled\nCustomer notified'},
-    {suite:4, title:'Concurrent order updates — optimistic locking',  priority:'high',     auto:'Automated',      tool:'JUnit 5',     desc:'Two concurrent edits produce consistent result.', steps:'Send two concurrent PATCH requests\nObserve final state', expect:'One succeeds\nOne returns 409 conflict\nNo data corruption'},
-  ];
-
-  sampleCases.forEach((sc) => {
-    cases.push(mk('case', {
-      suiteId: suites[sc.suite].id,
-      title: sc.title, priority: sc.priority,
-      automation: sc.auto, tool: sc.tool,
-      desc: sc.desc, status: 'pending',
-      steps: sc.steps.split('\n'),
-      expect: sc.expect.split('\n'),
-    }));
-  });
-
-  // seed two completed runs
-  const runs = [];
-  const r1cases = cases.filter(c => c.suiteId === suites[0].id);
-  const run1 = mk('run', { suiteId: suites[0].id, completedAt: new Date(Date.now()-86400000*2).toISOString() });
-  run1.results = r1cases.map(c => ({
-    caseId: c.id, caseTitle: c.title,
-    status: Math.random()>.25?'pass':'fail',
-    duration: Math.floor(Math.random()*800+100)
-  }));
-  const r2cases = cases.filter(c => c.suiteId === suites[1].id);
-  const run2 = mk('run', { suiteId: suites[1].id, completedAt: new Date(Date.now()-86400000).toISOString() });
-  run2.results = r2cases.map(c => ({
-    caseId: c.id, caseTitle: c.title,
-    status: Math.random()>.35?'pass':'fail',
-    duration: Math.floor(Math.random()*3000+500)
-  }));
-  runs.push(run1, run2);
-
-  return { suites, cases, runs };
-}
-
+// ── id generator must come BEFORE load() calls defaultDB() ──
 let _idSeq = Date.now();
 function uid(prefix){ return prefix + '-' + (++_idSeq).toString(36); }
 function mk(type, props) {
   const base = { id: uid(type), createdAt: new Date().toISOString() };
   if (type === 'run') base.startedAt = new Date().toISOString();
   return Object.assign(base, props);
+}
+
+let DB = load();
+
+function load() {
+  try {
+    const stored = JSON.parse(localStorage.getItem('qa-portal-db'));
+    if (stored && stored.suites && stored.suites.length >= 5 &&
+        stored.cases  && stored.cases.length  >= 10 &&
+        stored.runs   && stored.runs.length   >= 5) {
+      return stored;
+    }
+    return defaultDB();
+  } catch(e) { console.warn('DB load failed, using defaults:', e); return defaultDB(); }
+}
+
+function save() {
+  try { localStorage.setItem('qa-portal-db', JSON.stringify(DB)); } catch(e) {}
+  updateBadges();
+}
+
+function defaultDB() {
+  // ── Suites ──────────────────────────────────────────
+  const suites = [
+    mk('suite',{name:'Auth Service — Regression',     category:'functional',    env:'staging', owner:'Backend Team',   tags:'regression,auth,api,jwt',       desc:'Full regression suite for authentication and authorization flows including JWT, OAuth2, and RBAC.'}),
+    mk('suite',{name:'User Management — E2E',          category:'functional',    env:'staging', owner:'QA Team',        tags:'e2e,user,crud,regression',      desc:'End-to-end user lifecycle: registration, profile updates, role changes, and account deletion.'}),
+    mk('suite',{name:'Order API — Performance',        category:'performance',   env:'staging', owner:'Perf Team',      tags:'load,sla,k6,stress',            desc:'Load, stress, and spike tests for the Order Management API targeting 50k orders/day peak.'}),
+    mk('suite',{name:'Inventory — Performance',        category:'performance',   env:'prod',    owner:'Perf Team',      tags:'load,inventory,latency',        desc:'Concurrent read/write performance on inventory reservation service under peak holiday load.'}),
+    mk('suite',{name:'Payment — Security Audit',       category:'security',      env:'staging', owner:'SecOps',         tags:'pci,owasp,pentest,encryption',  desc:'PCI-DSS Level 1 and OWASP Top 10 security validation for all payment endpoints.'}),
+    mk('suite',{name:'API Gateway — Security',         category:'security',      env:'staging', owner:'SecOps',         tags:'api,rate-limit,headers,cve',    desc:'API gateway header hygiene, rate limiting, CVE scanning, and secrets validation.'}),
+    mk('suite',{name:'UI — Accessibility (WCAG 2.2)',  category:'accessibility', env:'dev',     owner:'Frontend Team',  tags:'wcag,a11y,aria,screen-reader',  desc:'WCAG 2.2 AA automated and manual compliance for all consumer-facing UI components.'}),
+    mk('suite',{name:'Microservice Mesh — Reliability',category:'reliability',   env:'staging', owner:'SRE Team',       tags:'chaos,circuit-breaker,k8s,slo', desc:'Chaos engineering and fault injection for the service mesh. Circuit breaker and self-healing validation.'}),
+    mk('suite',{name:'Checkout — Business Logic',      category:'business',      env:'staging', owner:'QA Team',        tags:'domain,saga,biz,compensation',  desc:'Business rule validation: saga compensation, pricing rules, inventory locks, and edge cases.'}),
+    mk('suite',{name:'Notifications — Business Logic', category:'business',      env:'staging', owner:'QA Team',        tags:'events,domain,workflow,bdd',    desc:'BDD workflow tests for notification triggers, delivery guarantees, and idempotency.'}),
+  ];
+
+  // ── Test Cases ───────────────────────────────────────
+  const raw = [
+    // ── Functional: Auth (suite 0)
+    {s:0,title:'Happy path login — valid credentials',           p:'critical',a:'Automated',     t:'Cypress',          desc:'Full login flow with valid email and password redirects to dashboard.',               steps:'Open /login\nEnter valid credentials\nClick Sign In\nAssert redirect to /dashboard',                        expect:'HTTP 200\nJWT stored in httpOnly cookie\nDashboard renders within 500ms'},
+    {s:0,title:'Login rejected — invalid password',              p:'high',    a:'Automated',     t:'Cypress',          desc:'Wrong password returns 401 with safe error message.',                                steps:'Open /login\nEnter wrong password\nClick Sign In',                                                       expect:'HTTP 401\nError: Invalid credentials\nNo token issued'},
+    {s:0,title:'Account lockout after 5 failed attempts',        p:'critical',a:'Automated',     t:'Supertest',        desc:'Brute-force protection: account locks for 15 minutes after 5 failures.',               steps:'Send 5 invalid login requests\nSend 6th request',                                                         expect:'6th attempt returns 429\nRetry-After header present\nAudit log entry created'},
+    {s:0,title:'JWT expiry — forces re-authentication',          p:'high',    a:'Automated',     t:'Supertest',        desc:'Expired JWT tokens must be rejected at all protected routes.',                         steps:'Use expired JWT in Authorization header\nCall /api/orders',                                               expect:'HTTP 401\nBody: token_expired\nNo data returned'},
+    {s:0,title:'Refresh token rotation — single use',            p:'high',    a:'Automated',     t:'Supertest',        desc:'Refresh tokens are invalidated after first use to prevent replay.',                    steps:'Exchange refresh token\nReuse same refresh token',                                                        expect:'First exchange returns new token pair\nSecond use returns 401 token_reused'},
+    {s:0,title:'RBAC — admin blocked from super-admin route',    p:'critical',a:'Automated',     t:'Postman/Newman',   desc:'Privilege escalation prevention between role tiers.',                                steps:'Authenticate as ADMIN role\nGET /api/admin/super/users',                                                  expect:'HTTP 403 Forbidden\nBody: insufficient_role\nNo data returned'},
+    {s:0,title:'MFA bypass attempt via direct API call',         p:'critical',a:'Manual',        t:'Burp Suite',       desc:'MFA challenge cannot be bypassed by calling the post-MFA API endpoint directly.',    steps:'Authenticate without completing MFA\nDirect POST /api/auth/mfa/verify with guessed code',                 expect:'HTTP 401 mfa_required\nNo session created'},
+    // ── Functional: User Mgmt (suite 1)
+    {s:1,title:'User registration — full happy path',            p:'critical',a:'Automated',     t:'Cypress',          desc:'New user can register, verify email, and access the platform.',                       steps:'POST /api/users with valid payload\nVerify confirmation email sent\nClick confirmation link',              expect:'User created with PENDING_VERIFICATION status\nEmail sent\nStatus becomes ACTIVE after verify'},
+    {s:1,title:'Duplicate email registration rejected',          p:'high',    a:'Automated',     t:'Supertest',        desc:'Registration with existing email returns 409 Conflict.',                              steps:'Register email@example.com\nAttempt to register same email again',                                         expect:'HTTP 409\nBody: email_already_exists\nNo duplicate user in DB'},
+    {s:1,title:'Profile update — partial PATCH idempotency',     p:'medium',  a:'Automated',     t:'Supertest',        desc:'PATCH with same data multiple times produces identical final state.',                  steps:'PATCH /api/users/:id with name change\nRepeat identical PATCH request',                                    expect:'Both return HTTP 200\nFinal state identical\nUpdatedAt advances only once per second'},
+    {s:1,title:'Admin deletes user — cascade cleanup',           p:'high',    a:'Automated',     t:'JUnit 5',          desc:'Deleting a user cascades to orders, sessions, and audit logs.',                       steps:'Admin DELETE /api/users/:id\nQuery DB for related records',                                               expect:'User record soft-deleted\nActive sessions invalidated\nOrders assigned to system user'},
+    // ── Performance: Order API (suite 2)
+    {s:2,title:'Baseline load — 500 RPS sustained 30 min',       p:'critical',a:'Automated',     t:'k6',               desc:'Validate p95 latency < 200ms and error rate < 0.1% at target RPS.',                   steps:'Ramp to 500 RPS over 5 min\nSustain 30 min\nRecord p50/p95/p99/error rate',                               expect:'p95 < 200ms\nError rate < 0.1%\nNo OOM events\nCPU < 75%'},
+    {s:2,title:'Stress test — find breaking point',              p:'high',    a:'Automated',     t:'k6',               desc:'Incrementally increase load until error rate > 5%. Document breaking point.',          steps:'Increase load 100 RPS every 2 min\nObserve error rate\nRecord breaking RPS',                              expect:'System degrades gracefully\nCircuit breaker opens\nBreaking point documented'},
+    {s:2,title:'Spike test — 10× burst in 30 seconds',           p:'high',    a:'Automated',     t:'k6',               desc:'Flash traffic spike: 500→5000 RPS in 30s. Validate queue and recovery.',               steps:'Inject spike to 5000 RPS\nMonitor queue depth and error rate\nReduce load\nMeasure recovery time',          expect:'Queue < 10s wait\nError rate spikes but recovers < 60s\n0 unhandled OOM'},
+    {s:2,title:'Soak test — 8 hour sustained load',              p:'medium',  a:'Automated',     t:'k6',               desc:'Detect memory leaks and performance degradation over extended runtime.',                steps:'Run 200 RPS for 8 hours\nSample heap memory every 10 min\nCheck for gradual latency increase',             expect:'Memory growth < 10% over 8h\nLatency stable within ±15% of baseline\nNo process restarts'},
+    // ── Performance: Inventory (suite 3)
+    {s:3,title:'Concurrent reservation — 1000 parallel writes',  p:'critical',a:'Automated',     t:'k6 + PostgreSQL',  desc:'1000 concurrent inventory reservation requests produce no overselling.',               steps:'Send 1000 concurrent POST /api/reserve\nQuery final inventory count',                                      expect:'Final count >= 0 (no oversell)\nAll conflicts return 409\nDB row-level locking confirmed'},
+    {s:3,title:'Read-heavy cache hit validation',                 p:'medium',  a:'Automated',     t:'k6 + Redis',       desc:'Redis cache hit ratio > 90% for inventory reads under load.',                          steps:'Warm cache with 10k GET requests\nRun 500 RPS read load test\nSample Redis hit ratio',                     expect:'Cache hit ratio > 90%\np95 < 50ms for cached reads\nDB query count reduced by > 85%'},
+    // ── Security: Payment (suite 4)
+    {s:4,title:'OWASP ZAP active scan — all endpoints',          p:'critical',a:'Automated',     t:'OWASP ZAP',        desc:'Full OWASP Top 10 automated active scan against all API endpoints.',                   steps:'Configure ZAP with OpenAPI spec\nRun full active scan\nReview report',                                     expect:'Zero CRITICAL findings\nZero HIGH findings unmitigated\nAll medium findings triaged'},
+    {s:4,title:'SQL injection — order filter parameter',         p:'critical',a:'Automated',     t:'Burp Suite',       desc:'Parameterized queries prevent SQLi in all filter parameters.',                          steps:'Inject SQLi payloads: OR 1=1, UNION SELECT, DROP TABLE\nObserve responses',                                expect:'All inputs sanitized\nHTTP 400 returned\nNo DB error details in response'},
+    {s:4,title:'PCI-DSS — PAN never stored in plaintext',        p:'critical',a:'Manual+Auto',   t:'DB Inspector',     desc:'Payment card numbers tokenized before persistence. Raw PAN never in DB or logs.',       steps:'Process a payment with real test PAN\nQuery DB payments table\nSearch logs for PAN pattern',                expect:'DB stores token only\nLogs contain no PAN-like 16-digit strings\nAudit trail complete'},
+    {s:4,title:'TLS downgrade attack — enforce TLS 1.2+',        p:'high',    a:'Automated',     t:'testssl.sh',       desc:'Server rejects TLS 1.0 and 1.1 connections. Only TLS 1.2+ accepted.',                 steps:'Connect via TLS 1.0\nConnect via TLS 1.1\nConnect via TLS 1.2',                                           expect:'TLS 1.0 connection rejected\nTLS 1.1 connection rejected\nTLS 1.2 succeeds'},
+    {s:4,title:'JWT algorithm confusion — RS256 to HS256',       p:'critical',a:'Manual',        t:'jwt_tool',         desc:'Server rejects tokens signed with HMAC using the public key.',                         steps:'Obtain RS256 JWT\nResign with HS256 using server public key\nSend manipulated token',                       expect:'HTTP 401 invalid_algorithm\nServer does not accept HS256 tokens'},
+    // ── Security: API Gateway (suite 5)
+    {s:5,title:'Rate limiting — 100 req/min threshold',          p:'high',    a:'Automated',     t:'k6',               desc:'API gateway enforces rate limit at 100 req/min per client IP.',                         steps:'Send 101 requests in 60 seconds from same IP',                                                            expect:'101st request returns HTTP 429\nRetry-After header present\nX-RateLimit headers accurate'},
+    {s:5,title:'Security headers — HSTS, CSP, X-Frame-Options',  p:'high',    a:'Automated',     t:'curl + axe',       desc:'All required security headers present on every response.',                             steps:'GET /api/health\nInspect response headers',                                                               expect:'Strict-Transport-Security present\nContent-Security-Policy present\nX-Frame-Options: DENY'},
+    {s:5,title:'Secrets scan — no credentials in source',        p:'critical',a:'Automated',     t:'truffleHog',       desc:'No API keys, passwords, or tokens committed to source control.',                      steps:'Run truffleHog on full git history\nScan .env files and config\nCheck Docker images',                      expect:'Zero high-entropy secret findings\nNo AWS keys, DB passwords in history'},
+    {s:5,title:'CVE scan — no critical dependency vulns',        p:'high',    a:'Automated',     t:'Trivy / Snyk',     desc:'Third-party dependencies contain no CVSS ≥ 7.0 unmitigated vulnerabilities.',          steps:'Run Trivy on container image\nRun npm audit / mvn dependency-check',                                       expect:'Zero CRITICAL CVEs in production deps\nAll HIGH CVEs have mitigation plan'},
+    // ── Accessibility (suite 6)
+    {s:6,title:'Axe-core — all page templates WCAG 2.2 AA',      p:'high',    a:'Automated',     t:'axe-core',         desc:'Automated WCAG 2.2 AA compliance scan on all page templates.',                          steps:'Run axe on: /login, /dashboard, /orders, /checkout, /profile\nRecord all violations',                      expect:'Zero CRITICAL violations\nZero SERIOUS violations\nLighthouse a11y score ≥ 90'},
+    {s:6,title:'Color contrast — AA ratio all text elements',    p:'high',    a:'Automated',     t:'axe-core',         desc:'All text meets WCAG AA contrast: 4.5:1 normal, 3:1 large text.',                       steps:'Run contrast audit on all themed components\nTest light and dark mode variants',                           expect:'All normal text contrast ≥ 4.5:1\nAll large text contrast ≥ 3:1\nNo contrast exceptions'},
+    {s:6,title:'Keyboard navigation — full checkout flow',       p:'high',    a:'Manual',        t:'Manual',           desc:'Complete checkout flow using keyboard only, no mouse interaction.',                    steps:'Tab to first field\nNavigate all form fields\nSubmit order\nVerify confirmation — keyboard only',           expect:'All fields reachable via Tab\nFocus indicator visible at all times\nOrder completes successfully'},
+    {s:6,title:'NVDA screen reader — order confirmation page',   p:'high',    a:'Manual',        t:'NVDA + Chrome',    desc:'NVDA correctly announces all order confirmation page content.',                        steps:'Enable NVDA\nNavigate to order confirmation\nBrowse with arrow keys and virtual cursor',                   expect:'Order total announced correctly\nAll interactive elements have accessible names\nAlerts announced'},
+    {s:6,title:'Focus trap — modal dialogs close on Escape',     p:'medium',  a:'Automated',     t:'Cypress',          desc:'Focus is trapped inside modals; Escape key dismisses them.',                          steps:'Open confirmation modal\nTab through modal elements\nPress Escape',                                        expect:'Focus stays inside modal while open\nEscape closes modal\nFocus returns to trigger element'},
+    // ── Reliability (suite 7)
+    {s:7,title:'Chaos — kill payment service pod',               p:'critical',a:'Automated',     t:'Chaos Mesh',       desc:'Payment service pod killed. Upstream order service fails gracefully.',                  steps:'Terminate payment-service pod via Chaos Mesh\nSend order creation requests\nObserve circuit breaker',      expect:'Circuit breaker opens within 5s\nFallback returns 503 with retry guidance\nPod restarts < 30s'},
+    {s:7,title:'Network partition — DB connection severed',      p:'critical',a:'Automated',     t:'Toxiproxy',        desc:'Database connection severed via Toxiproxy. App returns cached data or graceful error.',  steps:'Block TCP to PostgreSQL port\nSend API requests\nRestore connection after 30s',                            expect:'Reads return cached data or 503\nNo data corruption\nRecovery automatic within 10s of restore'},
+    {s:7,title:'Circuit breaker — CLOSED→OPEN→HALF_OPEN→CLOSED', p:'critical',a:'Automated',     t:'Resilience4j',     desc:'Full circuit breaker state machine validation under failure injection.',                steps:'Inject 60% error rate on downstream service\nObserve CB opens\nWait 30s\nSend probe request',              expect:'CB opens at 50% failure threshold\nFail-fast response < 5ms in OPEN state\nSuccessful probe closes CB'},
+    {s:7,title:'Pod autoscaling — HPA triggers under load',      p:'high',    a:'Automated',     t:'k6 + kubectl',     desc:'Kubernetes HPA scales pods out when CPU > 70% and scales in after cooldown.',          steps:'Inject load to push CPU > 70%\nObserve HPA metrics\nReduce load\nObserve scale-in',                       expect:'New pod scheduled within 60s\nTraffic served without 5xx during scale-out\nScale-in after 5min cooldown'},
+    {s:7,title:'Kafka DLQ — poison message handling',            p:'high',    a:'Automated',     t:'Testcontainers',   desc:'Malformed Kafka messages routed to DLQ after max retry exhaustion.',                   steps:'Publish malformed event to order topic\nObserve retry attempts\nCheck DLQ after retries exhausted',         expect:'3 retry attempts made\nMessage in DLQ with error metadata\nConsumer group continues processing'},
+    {s:7,title:'Distributed trace — end-to-end span completeness',p:'medium', a:'Automated',     t:'Jaeger + OTel',    desc:'Full distributed trace captured across all 5 microservices for an order creation.',   steps:'Submit order creation request with trace header\nQuery Jaeger for trace ID\nValidate span tree',           expect:'All 5 service spans present\nNo broken trace links\nError spans correctly tagged'},
+    // ── Business Logic: Checkout (suite 8)
+    {s:8,title:'Order saga — payment failure compensation',      p:'critical',a:'Automated',     t:'JUnit 5',          desc:'Saga rolls back inventory and notifies customer when payment fails.',                  steps:'Create order (inventory reserved)\nInject payment failure\nObserve saga compensation',                     expect:'Inventory reservation released\nOrder status: CANCELLED\nCustomer notification event fired'},
+    {s:8,title:'Concurrent updates — optimistic locking',        p:'critical',a:'Automated',     t:'JUnit 5',          desc:'Two concurrent edits to same order produce exactly one success.',                     steps:'Send 2 concurrent PATCH /api/orders/:id\nObserve final state in DB',                                      expect:'One request returns HTTP 200\nOne returns HTTP 409 conflict\nFinal state consistent — no corruption'},
+    {s:8,title:'Discount stacking — correct application order', p:'high',    a:'Automated',     t:'JUnit 5',          desc:'Multiple discounts applied in correct precedence: promo > loyalty > volume.',          steps:'Add item with promo + loyalty + volume discount\nCompute total\nVerify order of application',               expect:'Promo applied first\nLoyalty applied on subtotal\nVolume applied last\nTotal matches specification'},
+    {s:8,title:'Pricing edge case — zero-price free item',       p:'medium',  a:'Automated',     t:'JUnit 5',          desc:'Free items (£0.00) checkout without triggering payment flow.',                         steps:'Add free item to cart\nProceed to checkout\nObserve payment step',                                        expect:'Payment step skipped\nOrder created in CONFIRMED status\nNo payment intent created'},
+    {s:8,title:'Monetary precision — BigDecimal rounding',       p:'critical',a:'Automated',     t:'Custom assertions', desc:'All monetary calculations use BigDecimal; no floating-point rounding errors.',        steps:'Calculate total for 3 items at £0.10 each\nVerify total\nApply 10% discount\nVerify discounted total',     expect:'Total: £0.30 (not £0.2999…)\nDiscounted: £0.27\nAll values exact to 2dp'},
+    {s:8,title:'Inventory oversell guard — race condition',      p:'critical',a:'Automated',     t:'JUnit 5',          desc:'Last item in stock cannot be sold twice even under concurrent pressure.',             steps:'Set inventory to 1\nSend 50 concurrent order creation requests for that item',                            expect:'Exactly 1 order confirmed\n49 orders rejected with OUT_OF_STOCK\nInventory count = 0'},
+    // ── Business Logic: Notifications (suite 9)
+    {s:9,title:'Order confirmation email — sent once only',      p:'high',    a:'Automated',     t:'Jest + Mailhog',   desc:'Confirmation email triggered exactly once per order regardless of retries.',           steps:'Create order\nVerify email sent\nSimulate webhook retry\nVerify no duplicate email',                       expect:'Exactly 1 email in Mailhog inbox\nEmail contains correct order details\nIdempotency key prevents duplicate'},
+    {s:9,title:'Webhook retry — 3 attempts then DLQ',            p:'high',    a:'Automated',     t:'Jest + Kafka',     desc:'Failed webhook delivery retried 3 times with exponential backoff then sent to DLQ.',   steps:'Configure webhook endpoint to return 500\nTrigger notification event\nObserve retry schedule',             expect:'3 delivery attempts at T+0, T+30s, T+2min\nAfter 3 failures: event in DLQ\nAlert raised'},
+    {s:9,title:'Real-time WebSocket — order status push',        p:'high',    a:'Automated',     t:'Cypress + WS',     desc:'Order status changes pushed via WebSocket within 500ms of backend state change.',     steps:'Connect WebSocket\nUpdate order status via API\nMeasure WS message arrival time',                          expect:'WS message received within 500ms\nMessage payload matches DB state\nNo duplicate messages'},
+    {s:9,title:'Notification preference — opt-out respected',    p:'medium',  a:'Automated',     t:'Supertest',        desc:'Users who opt out of marketing emails do not receive them under any code path.',       steps:'Set user marketing_opt_out = true\nTrigger marketing notification\nCheck Mailhog',                         expect:'Zero emails delivered to opted-out user\nPreference respected even if event fired'},
+  ];
+
+  const cases = raw.map(r => mk('case',{
+    suiteId: suites[r.s].id,
+    title: r.title, priority: r.p,
+    automation: r.a, tool: r.t,
+    desc: r.desc, status: 'pending',
+    steps: r.steps.split('\n'),
+    expect: r.expect.split('\n'),
+  }));
+
+  // ── Seed 12 completed runs with realistic results ────
+  const runs = [];
+  const now = Date.now();
+  const day = 86400000;
+
+  // Helper: deterministic pass/fail per case with controlled rates and some flakiness
+  function makeResults(suiteIdx, passRate, flakyTitles=[]) {
+    const suiteId = suites[suiteIdx].id;
+    const sc = cases.filter(c => c.suiteId === suiteId);
+    return sc.map(c => {
+      const isFlaky = flakyTitles.some(t => c.title.includes(t));
+      const r = Math.random();
+      let status;
+      if (isFlaky)         status = r > 0.5 ? 'pass' : 'fail';
+      else if (r > passRate) status = 'fail';
+      else if (r < 0.04)   status = 'skip';
+      else                 status = 'pass';
+      return { caseId: c.id, caseTitle: c.title, status, duration: Math.floor(Math.random()*2000+80) };
+    });
+  }
+
+  const runSeeds = [
+    // Suite 0 — Auth Regression (4 runs, improving trend)
+    { s:0, daysAgo:14, passRate:0.65, flaky:['MFA bypass'] },
+    { s:0, daysAgo:10, passRate:0.72, flaky:['MFA bypass'] },
+    { s:0, daysAgo:5,  passRate:0.88, flaky:['Refresh token'] },
+    { s:0, daysAgo:1,  passRate:0.95, flaky:[] },
+    // Suite 1 — User Management E2E (3 runs)
+    { s:1, daysAgo:11, passRate:0.70, flaky:['cascade cleanup'] },
+    { s:1, daysAgo:6,  passRate:0.85, flaky:['idempotency'] },
+    { s:1, daysAgo:1,  passRate:0.93, flaky:[] },
+    // Suite 2 — Order API Performance (3 runs)
+    { s:2, daysAgo:12, passRate:0.60, flaky:['Soak test'] },
+    { s:2, daysAgo:6,  passRate:0.78, flaky:['Soak test'] },
+    { s:2, daysAgo:2,  passRate:0.92, flaky:[] },
+    // Suite 3 — Inventory Performance (2 runs)
+    { s:3, daysAgo:8,  passRate:0.75, flaky:['cache hit'] },
+    { s:3, daysAgo:3,  passRate:0.90, flaky:[] },
+    // Suite 4 — Payment Security (3 runs)
+    { s:4, daysAgo:13, passRate:0.72, flaky:['JWT algorithm'] },
+    { s:4, daysAgo:8,  passRate:0.82, flaky:['JWT algorithm'] },
+    { s:4, daysAgo:3,  passRate:0.96, flaky:[] },
+    // Suite 5 — API Gateway Security (2 runs)
+    { s:5, daysAgo:7,  passRate:0.80, flaky:['CVE scan'] },
+    { s:5, daysAgo:2,  passRate:0.94, flaky:[] },
+    // Suite 6 — Accessibility (2 runs)
+    { s:6, daysAgo:9,  passRate:0.78, flaky:['NVDA screen reader'] },
+    { s:6, daysAgo:3,  passRate:0.91, flaky:[] },
+    // Suite 7 — Reliability (3 runs)
+    { s:7, daysAgo:12, passRate:0.62, flaky:['Kafka DLQ','Distributed trace'] },
+    { s:7, daysAgo:6,  passRate:0.76, flaky:['Distributed trace'] },
+    { s:7, daysAgo:2,  passRate:0.89, flaky:[] },
+    // Suite 8 — Checkout Business Logic (3 runs)
+    { s:8, daysAgo:10, passRate:0.68, flaky:['Pricing edge','race condition'] },
+    { s:8, daysAgo:5,  passRate:0.84, flaky:['race condition'] },
+    { s:8, daysAgo:1,  passRate:0.94, flaky:[] },
+    // Suite 9 — Notifications Business Logic (2 runs)
+    { s:9, daysAgo:7,  passRate:0.75, flaky:['WebSocket'] },
+    { s:9, daysAgo:2,  passRate:0.92, flaky:[] },
+  ];
+
+  runSeeds.forEach(seed => {
+    const startTs = new Date(now - seed.daysAgo * day - Math.random()*3600000);
+    const run = mk('run', { suiteId: suites[seed.s].id, startedAt: startTs.toISOString() });
+    run.results = makeResults(seed.s, seed.passRate, seed.flaky);
+    const totalDur = run.results.reduce((s,r) => s + r.duration, 0);
+    run.completedAt = new Date(startTs.getTime() + totalDur).toISOString();
+    runs.push(run);
+  });
+
+  return { suites, cases, runs };
 }
 
 // ═══════════════════════════════════════════════════════
@@ -833,20 +1077,65 @@ function renderSuites() {
   }).join('');
 }
 
+function toggleCreate(formId) {
+  const form = document.getElementById(formId);
+  const toggle = document.getElementById(formId + '-toggle');
+  const open = form.style.display === 'none';
+  form.style.display = open ? 'block' : 'none';
+  if (toggle) toggle.textContent = open ? '▲ collapse' : '▼ expand';
+  // populate suite select when opening case form
+  if (open && formId === 'case-form') {
+    const sel = document.getElementById('nc-suite-inline');
+    sel.innerHTML = DB.suites.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('') || '<option value="">No suites yet — create one first</option>';
+  }
+}
+
 function saveSuite() {
   const name = document.getElementById('ns-name').value.trim();
   if (!name) { toast('Suite name is required.','⚠️'); return; }
-  DB.suites.push(mk('suite',{
-    name, category: document.getElementById('ns-cat').value,
-    env: document.getElementById('ns-env').value,
-    desc: document.getElementById('ns-desc').value.trim(),
-    owner: document.getElementById('ns-owner').value.trim(),
-    tags: document.getElementById('ns-tags').value.trim(),
-  }));
-  save(); closeModal('modal-new-suite');
-  ['ns-name','ns-desc','ns-owner','ns-tags'].forEach(id=>document.getElementById(id).value='');
-  if (currentPage==='suites') renderSuites();
-  toast(`Suite "${name}" created.`,'✅');
+  const suite = mk('suite',{
+    name,
+    category: document.getElementById('ns-cat').value,
+    env:      document.getElementById('ns-env').value,
+    desc:     document.getElementById('ns-desc').value.trim(),
+    owner:    document.getElementById('ns-owner').value.trim() || 'QA Team',
+    tags:     document.getElementById('ns-tags').value.trim(),
+  });
+  DB.suites.push(suite);
+  save();
+  // reset form fields
+  ['ns-name','ns-desc','ns-tags'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  // collapse form
+  const form = document.getElementById('suite-form');
+  if (form) { form.style.display='none'; const t=document.getElementById('suite-form-toggle'); if(t) t.textContent='▼ expand'; }
+  closeModal('modal-new-suite');
+  renderSuites();
+  toast(`Suite "${name}" created successfully.`,'✅');
+}
+
+function saveCaseInline() {
+  const title   = document.getElementById('nc-title-inline').value.trim();
+  const suiteId = document.getElementById('nc-suite-inline').value;
+  if (!title)   { toast('Test case title is required.','⚠️'); return; }
+  if (!suiteId) { toast('Please select a suite first.','⚠️'); return; }
+  const steps  = (document.getElementById('nc-steps-inline').value||'').split('\n').map(s=>s.trim()).filter(Boolean);
+  const expect = (document.getElementById('nc-expect-inline').value||'').split('\n').map(s=>s.trim()).filter(Boolean);
+  const tc = mk('case',{
+    suiteId,
+    title,
+    priority:   document.getElementById('nc-priority-inline').value,
+    automation: document.getElementById('nc-auto-inline').value,
+    tool:       document.getElementById('nc-tool-inline').value.trim(),
+    desc:       document.getElementById('nc-desc-inline').value.trim(),
+    steps, expect, status:'pending'
+  });
+  DB.cases.push(tc);
+  save();
+  ['nc-title-inline','nc-tool-inline','nc-desc-inline','nc-steps-inline','nc-expect-inline'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  const form = document.getElementById('case-form');
+  if (form) { form.style.display='none'; const t=document.getElementById('case-form-toggle'); if(t) t.textContent='▼ expand'; }
+  renderCases();
+  toast(`Test case "${title}" created.`,'✅');
 }
 
 function deleteSuite(id) {
@@ -1138,20 +1427,299 @@ function renderResults() {
 // ═══════════════════════════════════════════════════════
 function renderReports() {
   const allRes = DB.runs.flatMap(r=>r.results||[]);
-  const pass = allRes.filter(r=>r.status==='pass').length;
-  const fail = allRes.filter(r=>r.status==='fail').length;
-  const total = allRes.length;
-  const pct   = total ? Math.round(pass/total*100) : 0;
+  const pass   = allRes.filter(r=>r.status==='pass').length;
+  const fail   = allRes.filter(r=>r.status==='fail').length;
+  const skip   = allRes.filter(r=>r.status==='skip').length;
+  const total  = allRes.length;
+  const pct    = total ? Math.round(pass/total*100) : 0;
   const avgDur = total ? Math.round(allRes.reduce((s,r)=>s+(r.duration||0),0)/total) : 0;
+  const totalDur = Math.round(allRes.reduce((s,r)=>s+(r.duration||0),0)/1000);
+  const defectDensity = DB.cases.length ? (fail/DB.cases.length).toFixed(2) : '0.00';
 
   document.getElementById('rpt-stats').innerHTML = `
-    <div class="stat" style="--sc:#3fb950"><div class="sn">${pct}%</div><div class="sl">Overall Pass Rate</div></div>
-    <div class="stat" style="--sc:#58a6ff"><div class="sn">${total}</div><div class="sl">Total Executions</div></div>
-    <div class="stat" style="--sc:#ff7b72"><div class="sn">${fail}</div><div class="sl">Total Failures</div></div>
-    <div class="stat" style="--sc:#ffa657"><div class="sn">${avgDur}ms</div><div class="sl">Avg Duration</div></div>
+    <div class="stat" style="--sc:${pct>=80?'#3fb950':pct>=60?'#ffa657':'#ff7b72'}"><div class="sn">${pct}%</div><div class="sl">Overall Pass Rate</div><div class="sd">${pass}/${total} passed</div></div>
+    <div class="stat" style="--sc:#58a6ff"><div class="sn">${DB.runs.length}</div><div class="sl">Total Runs</div><div class="sd">${total} executions</div></div>
+    <div class="stat" style="--sc:#3fb950"><div class="sn">${pass}</div><div class="sl">Passed</div><div class="sd">All runs</div></div>
+    <div class="stat" style="--sc:#ff7b72"><div class="sn">${fail}</div><div class="sl">Failed</div><div class="sd">Defect density: ${defectDensity}</div></div>
+    <div class="stat" style="--sc:#8b949e"><div class="sn">${skip}</div><div class="sl">Skipped</div><div class="sd">Blocked / deferred</div></div>
+    <div class="stat" style="--sc:#ffa657"><div class="sn">${avgDur}ms</div><div class="sl">Avg Duration</div><div class="sd">${totalDur}s total</div></div>
   `;
 
-  setTimeout(()=>{ drawBar(); drawTrend('chartTrend2'); renderFlaky(); }, 50);
+  setTimeout(()=>{
+    drawBar();
+    drawTrend('chartTrend2');
+    renderFlaky();
+    renderScorecard();
+    renderDurationHeatmap();
+    renderFailBars();
+    renderFullReport();
+    renderExecLog();
+  }, 50);
+}
+
+function renderScorecard() {
+  const el = document.getElementById('rpt-scorecard');
+  if (!el) return;
+  const rows = DB.suites.map(s => {
+    const runs = DB.runs.filter(r=>r.suiteId===s.id);
+    const last = runs.slice(-1)[0];
+    const res  = last?.results||[];
+    const pass = res.filter(r=>r.status==='pass').length;
+    const fail = res.filter(r=>r.status==='fail').length;
+    const pct  = res.length ? Math.round(pass/res.length*100) : null;
+    const meta = CAT_META[s.category]||{color:'#8b949e',icon:'📁'};
+    const grade = pct===null?'—':pct>=90?'A':pct>=80?'B':pct>=70?'C':pct>=60?'D':'F';
+    const gradeCol = {A:'#3fb950',B:'#79c0ff',C:'#ffa657',D:'#e3b341',F:'#ff7b72','—':'#6e7681'}[grade];
+    return `<tr>
+      <td><span style="border-left:3px solid ${meta.color};padding-left:8px;font-size:.82rem;font-weight:600">${meta.icon} ${esc(s.name)}</span></td>
+      <td style="text-align:center"><span style="font-size:1.1rem;font-weight:800;color:${gradeCol}">${grade}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="flex:1;height:5px;background:var(--surface3);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${pct||0}%;background:${pct>=80?'#3fb950':pct>=60?'#ffa657':'#ff7b72'};border-radius:3px"></div>
+          </div>
+          <span style="font-size:.76rem;font-weight:700;color:${pct>=80?'#3fb950':pct>=60?'#ffa657':'#ff7b72'};min-width:34px">${pct!==null?pct+'%':'—'}</span>
+        </div>
+      </td>
+      <td style="text-align:center;font-size:.76rem;color:var(--text3)">${runs.length}</td>
+    </tr>`;
+  }).join('');
+  el.innerHTML = `<table class="tbl"><thead><tr><th>Suite</th><th>Grade</th><th>Last Run Pass Rate</th><th>Runs</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function renderDurationHeatmap() {
+  const el = document.getElementById('rpt-duration');
+  if (!el) return;
+  const suiteData = DB.suites.map(s => {
+    const res = DB.runs.filter(r=>r.suiteId===s.id).flatMap(r=>r.results||[]);
+    const avg = res.length ? Math.round(res.reduce((a,r)=>a+(r.duration||0),0)/res.length) : 0;
+    const max = res.length ? Math.max(...res.map(r=>r.duration||0)) : 0;
+    return { name: s.name, avg, max, cat: s.category };
+  });
+  const globalMax = Math.max(...suiteData.map(d=>d.max), 1);
+  el.innerHTML = suiteData.map(d => {
+    const meta = CAT_META[d.cat]||{color:'#8b949e'};
+    const w = Math.round(d.avg/globalMax*100);
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:.8rem">
+      <div style="width:220px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(d.name)}">${esc(d.name)}</div>
+      <div style="flex:1;height:22px;background:var(--surface2);border-radius:4px;overflow:hidden;position:relative">
+        <div style="height:100%;width:${w}%;background:linear-gradient(90deg,${meta.color}99,${meta.color});border-radius:4px;transition:width .6s ease"></div>
+        <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:.72rem;color:var(--text2)">${d.avg}ms avg / ${d.max}ms max</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderFailBars() {
+  const el = document.getElementById('rpt-fail-bars');
+  if (!el) return;
+  el.innerHTML = DB.suites.map(s => {
+    const last = DB.runs.filter(r=>r.suiteId===s.id).slice(-1)[0];
+    const res = last?.results||[];
+    const fail = res.filter(r=>r.status==='fail').length;
+    const total = res.length||1;
+    const pct = Math.round(fail/total*100);
+    const meta = CAT_META[s.category]||{color:'#8b949e'};
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:.8rem">
+      <div style="width:220px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.name)}</div>
+      <div style="flex:1;height:20px;background:var(--surface2);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${pct>30?'#ff7b72':pct>15?'#ffa657':'#3fb950'};border-radius:4px"></div>
+      </div>
+      <span style="font-size:.76rem;font-weight:700;color:${pct>30?'#ff7b72':pct>15?'#ffa657':'#3fb950'};min-width:42px;text-align:right">${fail}/${total}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderFullReport() {
+  const el = document.getElementById('full-report-content');
+  if (!el) return;
+
+  const allRes  = DB.runs.flatMap(r=>r.results||[]);
+  const pass    = allRes.filter(r=>r.status==='pass').length;
+  const fail    = allRes.filter(r=>r.status==='fail').length;
+  const skip    = allRes.filter(r=>r.status==='skip').length;
+  const total   = allRes.length;
+  const pct     = total ? Math.round(pass/total*100) : 0;
+  const genDate = new Date().toLocaleString();
+
+  let html = `
+  <!-- Executive Summary Banner -->
+  <div style="background:linear-gradient(135deg,rgba(88,166,255,.12),rgba(210,168,255,.08));border:1px solid rgba(88,166,255,.2);border-radius:var(--r2);padding:20px 24px;margin-bottom:20px">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-size:1.1rem;font-weight:800;margin-bottom:4px">📋 Full Test Execution Report</div>
+        <div style="font-size:.78rem;color:var(--text2)">Generated: ${genDate} &nbsp;·&nbsp; ${DB.runs.length} runs executed across ${DB.suites.length} suites &nbsp;·&nbsp; ${DB.cases.length} total test cases</div>
+      </div>
+      <div style="display:flex;gap:16px;text-align:center">
+        <div><div style="font-size:1.8rem;font-weight:800;color:${pct>=80?'#3fb950':pct>=60?'#ffa657':'#ff7b72'}">${pct}%</div><div style="font-size:.68rem;color:var(--text3)">Overall Pass Rate</div></div>
+        <div><div style="font-size:1.8rem;font-weight:800;color:#3fb950">${pass}</div><div style="font-size:.68rem;color:var(--text3)">Passed</div></div>
+        <div><div style="font-size:1.8rem;font-weight:800;color:#ff7b72">${fail}</div><div style="font-size:.68rem;color:var(--text3)">Failed</div></div>
+        <div><div style="font-size:1.8rem;font-weight:800;color:#8b949e">${skip}</div><div style="font-size:.68rem;color:var(--text3)">Skipped</div></div>
+      </div>
+    </div>
+  </div>`;
+
+  // Per-suite section
+  DB.suites.forEach(suite => {
+    const suiteRuns  = DB.runs.filter(r=>r.suiteId===suite.id);
+    const latestRun  = suiteRuns.slice(-1)[0];
+    const allSuiteRes= suiteRuns.flatMap(r=>r.results||[]);
+    const latestRes  = latestRun?.results||[];
+    const lPass = latestRes.filter(r=>r.status==='pass').length;
+    const lFail = latestRes.filter(r=>r.status==='fail').length;
+    const lSkip = latestRes.filter(r=>r.status==='skip').length;
+    const lTotal= latestRes.length;
+    const lPct  = lTotal ? Math.round(lPass/lTotal*100) : 0;
+    const meta  = CAT_META[suite.category]||{color:'#8b949e',icon:'📁',label:suite.category};
+    const avgDur= allSuiteRes.length ? Math.round(allSuiteRes.reduce((s,r)=>s+(r.duration||0),0)/allSuiteRes.length) : 0;
+    const health= lPct>=90?{label:'HEALTHY',col:'#3fb950'}:lPct>=75?{label:'WARNING',col:'#ffa657'}:lPct>=50?{label:'DEGRADED',col:'#e3b341'}:{label:'CRITICAL',col:'#ff7b72'};
+
+    if (!suiteRuns.length) return;
+
+    html += `
+    <div class="card" style="margin-bottom:16px;border-top:3px solid ${meta.color}">
+      <div class="card-head" style="background:var(--surface2)">
+        <span style="font-size:1.1rem">${meta.icon}</span>
+        <h3 style="flex:1">${esc(suite.name)}</h3>
+        <span class="badge" style="color:${health.col};border-color:${health.col}33;background:${health.col}11">${health.label}</span>
+        <span class="badge badge-blue" style="margin-left:6px">${meta.label}</span>
+        <span class="badge badge-skip" style="margin-left:4px">${esc(suite.env||'staging')}</span>
+      </div>
+      <div class="card-body">
+
+        <!-- Suite KPIs -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-bottom:16px">
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center;border-top:2px solid ${lPct>=80?'#3fb950':lPct>=60?'#ffa657':'#ff7b72'}">
+            <div style="font-size:1.5rem;font-weight:800;color:${lPct>=80?'#3fb950':lPct>=60?'#ffa657':'#ff7b72'}">${lPct}%</div>
+            <div style="font-size:.66rem;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px">Pass Rate</div>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center;border-top:2px solid #3fb950">
+            <div style="font-size:1.5rem;font-weight:800;color:#3fb950">${lPass}</div>
+            <div style="font-size:.66rem;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px">Passed</div>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center;border-top:2px solid #ff7b72">
+            <div style="font-size:1.5rem;font-weight:800;color:#ff7b72">${lFail}</div>
+            <div style="font-size:.66rem;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px">Failed</div>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center;border-top:2px solid #8b949e">
+            <div style="font-size:1.5rem;font-weight:800;color:#8b949e">${lSkip}</div>
+            <div style="font-size:.66rem;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px">Skipped</div>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center;border-top:2px solid #58a6ff">
+            <div style="font-size:1.5rem;font-weight:800;color:#58a6ff">${suiteRuns.length}</div>
+            <div style="font-size:.66rem;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px">Total Runs</div>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center;border-top:2px solid #ffa657">
+            <div style="font-size:1.5rem;font-weight:800;color:#ffa657">${avgDur}ms</div>
+            <div style="font-size:.66rem;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px">Avg Duration</div>
+          </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div style="margin-bottom:16px">
+          <div style="display:flex;justify-content:space-between;font-size:.74rem;color:var(--text3);margin-bottom:5px">
+            <span>Pass / Fail / Skip Distribution</span>
+            <span>${lPass} passed · ${lFail} failed · ${lSkip} skipped</span>
+          </div>
+          <div style="height:10px;border-radius:5px;overflow:hidden;display:flex;background:var(--surface3)">
+            ${lTotal ? `
+            <div style="width:${Math.round(lPass/lTotal*100)}%;background:#3fb950;height:100%"></div>
+            <div style="width:${Math.round(lFail/lTotal*100)}%;background:#ff7b72;height:100%"></div>
+            <div style="width:${Math.round(lSkip/lTotal*100)}%;background:#6e7681;height:100%"></div>
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- Individual test case results (latest run) -->
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px">Latest Run — Test Case Results</div>
+        <table class="tbl" style="font-size:.8rem">
+          <thead><tr><th>#</th><th>Test Case</th><th>Priority</th><th>Status</th><th>Duration</th><th>Automation</th></tr></thead>
+          <tbody>
+            ${latestRes.map((r, idx) => {
+              const tc = DB.cases.find(c=>c.id===r.caseId)||{priority:'medium',automation:'Automated'};
+              const icon = {pass:'✓',fail:'✕',skip:'—'}[r.status]||'?';
+              const sc   = {pass:'#3fb950',fail:'#ff7b72',skip:'#6e7681'}[r.status];
+              return `<tr style="${r.status==='fail'?'background:rgba(255,123,114,.04)':''}">
+                <td style="color:var(--text3);font-family:monospace;font-size:.7rem">${String(idx+1).padStart(2,'0')}</td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <div style="width:20px;height:20px;border-radius:50%;background:${sc}22;color:${sc};display:flex;align-items:center;justify-content:center;font-size:.72rem;flex-shrink:0;font-weight:700">${icon}</div>
+                    <span style="font-weight:${r.status==='fail'?700:400};color:${r.status==='fail'?'#ff7b72':'var(--text)'}">${esc(r.caseTitle||r.caseId)}</span>
+                  </div>
+                </td>
+                <td><span class="badge badge-${tc.priority||'medium'}">${(tc.priority||'medium').toUpperCase()}</span></td>
+                <td><span class="badge badge-${r.status}">${r.status.toUpperCase()}</span></td>
+                <td style="color:var(--text3);font-size:.75rem">${r.duration}ms</td>
+                <td style="font-size:.75rem;color:var(--text2)">${esc(tc.automation||'—')}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+
+        <!-- Run history mini table -->
+        ${suiteRuns.length > 1 ? `
+        <div style="margin-top:14px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px">Run History</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${suiteRuns.map((r,i) => {
+            const rRes = r.results||[];
+            const rPass = rRes.filter(x=>x.status==='pass').length;
+            const rPct  = rRes.length ? Math.round(rPass/rRes.length*100) : 0;
+            const isLatest = i===suiteRuns.length-1;
+            return `<div style="padding:8px 12px;border-radius:var(--r);background:var(--surface2);border:1px solid ${isLatest?'var(--accent)':'var(--border)'};min-width:90px;text-align:center">
+              <div style="font-size:.9rem;font-weight:700;color:${rPct>=80?'#3fb950':rPct>=60?'#ffa657':'#ff7b72'}">${rPct}%</div>
+              <div style="font-size:.66rem;color:var(--text3)">${fmtDate(r.startedAt)}</div>
+              ${isLatest?'<div style="font-size:.6rem;color:var(--accent);margin-top:2px">LATEST</div>':''}
+            </div>`;
+          }).join('')}
+        </div>` : ''}
+
+      </div>
+    </div>`;
+  });
+
+  el.innerHTML = html;
+}
+
+function renderExecLog() {
+  // Populate suite filter
+  const suiteFilter = document.getElementById('execlog-suite');
+  if (suiteFilter && !suiteFilter._built) {
+    suiteFilter.innerHTML = '<option value="">All Suites</option>' + DB.suites.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
+    suiteFilter._built = true;
+  }
+
+  const q       = (document.getElementById('execlog-search')?.value||'').toLowerCase();
+  const stFilt  = document.getElementById('execlog-status')?.value||'';
+  const suFilt  = document.getElementById('execlog-suite')?.value||'';
+
+  const rows = [];
+  DB.runs.slice().sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt)).forEach(run => {
+    const suite = DB.suites.find(s=>s.id===run.suiteId);
+    if (suFilt && run.suiteId !== suFilt) return;
+    (run.results||[]).forEach(r => {
+      if (stFilt && r.status !== stFilt) return;
+      if (q && !(r.caseTitle||'').toLowerCase().includes(q) && !(suite?.name||'').toLowerCase().includes(q)) return;
+      const tc = DB.cases.find(c=>c.id===r.caseId)||{};
+      rows.push({ run, suite, result:r, tc });
+    });
+  });
+
+  const tbody = document.getElementById('execlog-tbody');
+  if (!rows.length) { tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text3)">No results match filters</td></tr>`; return; }
+
+  tbody.innerHTML = rows.slice(0,300).map(({run,suite,result:r,tc}, idx) => {
+    const meta = CAT_META[suite?.category]||{color:'#8b949e',label:'—'};
+    return `<tr style="${r.status==='fail'?'background:rgba(255,123,114,.04)':''}">
+      <td style="color:var(--text3);font-family:monospace;font-size:.7rem">${String(idx+1).padStart(3,'0')}</td>
+      <td><strong style="color:${r.status==='fail'?'#ff7b72':'var(--text)'}">${esc(r.caseTitle||r.caseId)}</strong></td>
+      <td style="font-size:.78rem;color:var(--text2)">${esc(suite?.name||'—')}</td>
+      <td><span style="font-size:.72rem;color:${meta.color}">${meta.label}</span></td>
+      <td><span class="badge badge-${tc.priority||'medium'}">${(tc.priority||'—').toUpperCase()}</span></td>
+      <td><span class="badge badge-${r.status}">${r.status.toUpperCase()}</span></td>
+      <td style="color:var(--text3);font-size:.76rem">${r.duration}ms</td>
+      <td style="color:var(--text3);font-size:.74rem">${fmt(run.startedAt)}</td>
+    </tr>`;
+  }).join('');
 }
 
 function drawBar() {
@@ -1531,7 +2099,7 @@ function toast(msg, icon='ℹ️'){
 //  INIT
 // ═══════════════════════════════════════════════════════
 save();
-renderDashboard();
+nav('dashboard');
 </script>
 </body>
 </html>
