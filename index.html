@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduLearn - Online Learning Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="#home" class="logo">
+                <i class="fa-solid fa-graduation-cap"></i> EduLearn
+            </a>
+            <button class="mobile-toggle" id="mobile-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <nav class="nav-links" id="nav-links">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#courses" class="nav-link">Courses</a>
+                <a href="#faculty" class="nav-link">Faculty</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <button id="theme-toggle" class="theme-toggle">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Container (SPA) -->
+    <main id="app-content">
+        
+        <!-- Home View -->
+        <section id="view-home" class="view active">
+            <!-- Hero Section -->
+            <section class="hero" id="home">
+                <div class="container hero-content">
+                    <h1>Unlock Your Potential with <span>EduLearn</span></h1>
+                    <p>World-class education from industry experts. Master Information Technology and Business skills to accelerate your career.</p>
+                    <div class="hero-buttons">
+                        <a href="#courses" class="btn btn-primary">Explore Courses</a>
+                        <a href="#about" class="btn btn-secondary">Get Started</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Statistics Section -->
+            <section class="statistics" id="statistics">
+                <div class="container stats-container">
+                    <div class="stat-card">
+                        <i class="fa-solid fa-users"></i>
+                        <h2 class="counter" data-target="15000">0</h2>
+                        <p>Total Students</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-solid fa-book-open"></i>
+                        <h2 class="counter" data-target="50">0</h2>
+                        <p>Total Courses</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                        <h2 class="counter" data-target="12">0</h2>
+                        <p>Expert Faculty</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Courses -->
+            <section class="featured-courses section-pad bg-light">
+                <div class="container">
+                    <div class="section-title">
+                        <h2>Featured Courses</h2>
+                        <p>Explore some of our most popular premium courses</p>
+                    </div>
+                    <div class="course-grid" id="featured-course-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                    <div class="text-center mt-2">
+                        <a href="#courses" class="btn btn-primary">View All 50 Courses</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Testimonials Section -->
+            <section class="testimonials section-pad" id="testimonials">
+                <div class="container">
+                    <div class="section-title">
+                        <h2>Student Success Stories</h2>
+                        <p>Hear what our learners have to say</p>
+                    </div>
+                    <div class="testimonial-grid" id="testimonial-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- FAQ Section -->
+            <section class="faq section-pad bg-light" id="faq">
+                <div class="container">
+                    <div class="section-title">
+                        <h2>Frequently Asked Questions</h2>
+                        <p>Everything you need to know about EduLearn</p>
+                    </div>
+                    <div class="faq-container" id="faq-container">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- About View -->
+        <section id="view-about" class="view section-pad">
+            <div class="container">
+                <div class="section-title">
+                    <h2>About EduLearn</h2>
+                    <p>Empowering minds through accessible, quality education.</p>
+                </div>
+                <div class="about-content">
+                    <div class="about-text">
+                        <h3>Our Mission</h3>
+                        <p>To provide high-quality, practical education in Information Technology and Business that equips students with the skills they need to thrive in the modern workforce.</p>
+                        <h3>Our Vision</h3>
+                        <p>To be the world's leading online learning platform, recognized for excellence, innovation, and transforming lives through education.</p>
+                        <ul class="about-features">
+                            <li><i class="fa-solid fa-check-circle"></i> Industry-aligned curriculum</li>
+                            <li><i class="fa-solid fa-check-circle"></i> Expert instructors with real-world experience</li>
+                            <li><i class="fa-solid fa-check-circle"></i> Flexible learning schedule</li>
+                            <li><i class="fa-solid fa-check-circle"></i> Interactive assessments and video materials</li>
+                        </ul>
+                    </div>
+                    <div class="about-image">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=600" alt="Students collaborating">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Courses View (List all 50) -->
+        <section id="view-courses" class="view section-pad bg-light">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Our Courses</h2>
+                    <p>Browse our comprehensive catalog of IT and Business courses</p>
+                </div>
+                
+                <div class="course-controls">
+                    <div class="search-bar">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" id="course-search" placeholder="Search for courses...">
+                    </div>
+                    <div class="category-filters">
+                        <button class="filter-btn active" data-filter="all">All Courses</button>
+                        <button class="filter-btn" data-filter="IT">Information Technology</button>
+                        <button class="filter-btn" data-filter="Business">Business</button>
+                    </div>
+                </div>
+
+                <div class="course-grid" id="all-course-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Course Details View -->
+        <section id="view-course-details" class="view section-pad">
+            <div class="container">
+                <button class="btn btn-secondary back-btn" id="back-to-courses"><i class="fa-solid fa-arrow-left"></i> Back to Courses</button>
+                
+                <div class="course-header" id="cd-header">
+                    <!-- Dynamic Title and Info -->
+                </div>
+
+                <div class="course-tabs">
+                    <button class="tab-btn active" data-tab="materials">Materials</button>
+                    <button class="tab-btn" data-tab="videos">Videos</button>
+                    <button class="tab-btn" data-tab="tests">Tests</button>
+                </div>
+
+                <div class="tab-content">
+                    <!-- Materials Tab -->
+                    <div id="tab-materials" class="tab-pane active">
+                        <h3>Course Materials</h3>
+                        <p class="cd-desc" id="cd-desc"></p>
+                        
+                        <h4>Learning Outcomes:</h4>
+                        <ul class="cd-outcomes" id="cd-outcomes"></ul>
+
+                        <h4>Modules:</h4>
+                        <div class="modules-list" id="cd-modules"></div>
+                    </div>
+
+                    <!-- Videos Tab -->
+                    <div id="tab-videos" class="tab-pane">
+                        <h3>Course Videos</h3>
+                        <div class="video-grid" id="cd-videos"></div>
+                    </div>
+
+                    <!-- Tests Tab -->
+                    <div id="tab-tests" class="tab-pane">
+                        <h3>Knowledge Check</h3>
+                        <div id="test-container">
+                            <div class="test-progress">Question <span id="current-q">1</span> of 10</div>
+                            <div id="question-box" class="question-box"></div>
+                            <button id="submit-test" class="btn btn-primary mt-1">Submit Answer</button>
+                        </div>
+                        <div id="test-results" class="test-results" style="display: none;">
+                            <!-- Results -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Faculty View -->
+        <section id="view-faculty" class="view section-pad bg-light">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Our Expert Faculty</h2>
+                    <p>Learn from industry leaders and experienced educators</p>
+                </div>
+                <div class="faculty-grid" id="faculty-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact View -->
+        <section id="view-contact" class="view section-pad">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Contact Us</h2>
+                    <p>We'd love to hear from you. Get in touch with our team.</p>
+                </div>
+                <div class="contact-container">
+                    <div class="contact-info">
+                        <h3>Get In Touch</h3>
+                        <div class="info-item">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <div>
+                                <h4>Location</h4>
+                                <p>123 Education Lane, Knowledge City, NY 10001</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fa-solid fa-phone"></i>
+                            <div>
+                                <h4>Phone</h4>
+                                <p>+1 (555) 123-4567</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fa-solid fa-envelope"></i>
+                            <div>
+                                <h4>Email</h4>
+                                <p>support@edulearn.edu</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fa-solid fa-clock"></i>
+                            <div>
+                                <h4>Operating Hours</h4>
+                                <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
+                            </div>
+                        </div>
+                        <div class="map-container">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.25280970673!2d-74.14448742296766!3d40.69763123335552!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2s!4v1688000000000!5m2!1sen!2s" width="100%" height="200" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                    </div>
+                    <div class="contact-form-container">
+                        <h3>Send us a Message</h3>
+                        <form id="contact-form" class="contact-form">
+                            <div class="form-group">
+                                <label for="name">Full Name</label>
+                                <input type="text" id="name" required placeholder="John Doe">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" required placeholder="john@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="subject">Subject</label>
+                                <input type="text" id="subject" required placeholder="How can we help?">
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Message</label>
+                                <textarea id="message" rows="5" required placeholder="Your message here..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Send Message</button>
+                            <div id="form-success" class="form-success">Message sent successfully! We'll get back to you soon.</div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <a href="#home" class="logo text-white">
+                    <i class="fa-solid fa-graduation-cap"></i> EduLearn
+                </a>
+                <p class="mt-1">Empowering the world through accessible, world-class education. Learn anytime, anywhere.</p>
+                <div class="social-links mt-1">
+                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#courses">Courses</a></li>
+                    <li><a href="#faculty">Faculty</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Newsletter</h3>
+                <p>Subscribe to get the latest updates.</p>
+                <form class="newsletter-form mt-1" onsubmit="event.preventDefault(); alert('Subscribed!')">
+                    <input type="email" placeholder="Your email" required>
+                    <button type="submit"><i class="fa-solid fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2026 EduLearn. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
